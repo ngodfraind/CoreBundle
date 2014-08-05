@@ -14,6 +14,7 @@ namespace Claroline\CoreBundle\Library\Hwi;
 use Claroline\CoreBundle\Library\Configuration\PlatformConfigurationHandler;
 use JMS\DiExtraBundle\Annotation as DI;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\FacebookResourceOwner;
+use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GoogleResourceOwner;
 use Buzz\Client\Curl;
 use HWI\Bundle\OAuthBundle\OAuth\RequestDataStorage\SessionStorage;
 
@@ -63,6 +64,30 @@ class ResourceOwnerFactory
         );
 
         return $owner;
+    }
 
+    public function getGoogleResourceOwner()
+    {
+        $httpClient = new Curl();
+        $httpClient->setVerifyPeer(true);
+        $httpClient->setTimeout(10);
+        $httpClient->setMaxRedirects(5);
+        $httpClient->setIgnoreErrors(true);
+
+        $owner = new GoogleResourceOwner(
+            $httpClient,
+            $this->httpUtils,
+            array(
+                'client_id' => $this->configHandler->getParameter('facebook_client_id'),
+                'client_secret' => $this->configHandler->getParameter('facebook_client_secret'),
+                'scope' => 'email',
+                'paths' => array(),
+                'options' => array()
+            ),
+            'facebook',
+            new SessionStorage($this->session)
+        );
+
+        return $owner;
     }
 }

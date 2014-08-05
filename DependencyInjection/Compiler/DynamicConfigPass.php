@@ -60,5 +60,15 @@ class DynamicConfigPass implements CompilerPassInterface
         $facebook->setClass('FacebookResourceOwner');
         $container->removeDefinition('hwi_oauth.resource_owner.facebook');
         $container->setDefinition('hwi_oauth.resource_owner.facebook', $facebook);
+
+        //google
+        $google = new Definition();
+        $google->setFactoryService('claroline.hwi.resource_owner_factory');
+        $google->setFactoryMethod('getGoogleResourceOwner');
+        $google->setClass('GoogleResourceOwner');
+        $container->removeDefinition('hwi_oauth.resource_owner.google');
+        $container->setDefinition('hwi_oauth.resource_owner.google', $google);
+
+        //https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email&response_type=code&redirect_uri=http://localhost/login/check-google&client_id=941101907467-jfjh6p7pi045f8c3vv915vvl261ula81.apps.googleusercontent.com&hl=en&from_login=1&as=-63d64083c9201d81&pli=1&authuser=0
     }
 }

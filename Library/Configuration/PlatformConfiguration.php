@@ -45,6 +45,8 @@ class PlatformConfiguration
     private $facebookClientId;
     private $facebookClientSecret;
     private $facebookClientActive;
+    private $googleClientId;
+    private $googleClientSecret;
     private $formCaptcha;
     private $platformLimitDate;
     private $platformInitDate;
@@ -505,5 +507,37 @@ class PlatformConfiguration
     public function getAnonymousPublicProfile()
     {
         return $this->anonymousPublicProfile;
+    }
+
+    /**
+     * @param integer $googleClientId
+     */
+    public function setGoogleClientId($googleClientId)
+    {
+        $this->googleClientId = $googleClientId;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getGoogleClientId()
+    {
+        return $this->googleClientId;
+    }
+
+    /**
+     * @param integer $googleClientSecret
+     */
+    public function setGoogleClientSecret($googleClientSecret)
+    {
+        $this->googleClientSecret = $googleClientSecret;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getGoogleClientSecret()
+    {
+        return $this->googleClientSecret;
     }
 }

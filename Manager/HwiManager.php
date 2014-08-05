@@ -84,4 +84,9 @@ class HwiManager
 
         return array();
     }
+
+    public function validateGoogle($appId, $secret)
+    {
+        return array();
+    }
 }

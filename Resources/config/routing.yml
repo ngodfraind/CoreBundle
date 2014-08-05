@@ -9,6 +9,9 @@ hwi_oauth_redirect:
 facebook_login:
     pattern: /login/check_facebook
 
+google_login:
+    pattern: /login/check-google
+
 claro_security_login_check:
     pattern: /login_check
     options: { expose: true }

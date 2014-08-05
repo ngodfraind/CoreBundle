@@ -57,6 +57,8 @@ class PlatformConfigurationHandler
         'facebook_client_id' => null,
         'facebook_client_secret' => null,
         'facebook_client_active' => null,
+        'google_client_id' => null,
+        'google_client_secret' => null,
         'form_captcha' => true,
         'platform_limit_date' => 1559350861,//1 june 2019
         'platform_init_date' => 1388534461, //1 june 2014
@@ -149,6 +151,8 @@ class PlatformConfigurationHandler
         $config->setFacebookClientId($this->parameters['facebook_client_id']);
         $config->setFacebookClientSecret($this->parameters['facebook_client_secret']);
         $config->setFacebookClientActive($this->parameters['facebook_client_active']);
+        $config->setGoogleClientId($this->parameters['google_client_id']);
+        $config->setGoogleClientSecret($this->parameters['google_client_secret']);
         $config->setFormCaptcha($this->parameters['form_captcha']);
         $config->setAccountDuration($this->parameters['account_duration']); //days
         $config->setPlatformLimitDate($this->parameters['platform_limit_date']);

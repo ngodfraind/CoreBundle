@@ -698,6 +698,22 @@ class ParametersController extends Controller
     }
 
     /**
+     * @EXT\Route("/oauth/google", name="claro_admin_google_form")
+     * @EXT\Method("GET")
+     * @EXT\Template
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function googleFormAction()
+    {
+        $this->checkOpen();
+        $platformConfig = $this->configHandler->getPlatformConfig();
+        $form = $this->formFactory->create(new AdminForm\GoogleType(), $platformConfig);
+
+        return array('form' => $form->createView());
+    }
+
+    /**
      * @EXT\Route("delete/logo/{file}", name="claro_admin_delete_logo", options = {"expose"=true})
      *
      * @param $file
@@ -740,6 +756,46 @@ class ParametersController extends Controller
 
             $errors = $this->hwiManager->validateFacebook(
                 $data['facebook_client_id'], $data['facebook_client_secret']
+            );
+
+            if (count($errors) === 0) {
+                $this->configHandler->setParameters($data);
+                $this->cacheManager->refresh();
+            } else {
+                foreach ($errors as $error) {
+                    $trans = $this->translator->trans($error, array(), 'platform');
+                    $form->addError(new FormError($trans));
+                }
+            }
+        }
+
+        return array('form' => $form->createView());
+    }
+
+    /**
+     * @EXT\Route("/oauth/google", name="claro_admin_google_form_submit")
+     * @EXT\Method("POST")
+     * @EXT\Template("ClarolineCoreBundle:Administration\Parameters:googleForm.html.twig")
+     *
+     * Displays the administration section index.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function submitGoogleFormAction()
+    {
+        $this->checkOpen();
+        $platformConfig = $this->configHandler->getPlatformConfig();
+        $form = $this->formFactory->create(new AdminForm\GoogleType(), $platformConfig);
+        $form->handleRequest($this->request);
+
+        if ($form->isValid()) {
+            $data = array(
+                'google_client_id' => $form['google_client_id']->getData(),
+                'google_client_secret' => $form['google_client_secret']->getData()
+            );
+
+            $errors = $this->hwiManager->validateGoogle(
+                $data['google_client_id'], $data['google_client_secret']
             );
 
             if (count($errors) === 0) {

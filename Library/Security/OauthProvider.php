@@ -14,9 +14,9 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Claroline\CoreBundle\Entity\User;
 
 /**
- * @Service("claroline.facebook_provider")
+ * @Service("claroline.oauth_provider")
  */
-class FacebookProvider implements OAuthAwareUserProviderInterface, UserProviderInterface
+class OauthProvider implements OAuthAwareUserProviderInterface, UserProviderInterface
 {
     
     private $em;
