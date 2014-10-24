@@ -34,6 +34,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Role\SwitchUserRole;
 
 /**
  * @DI\Service("claroline.manager.user_manager")
@@ -1030,5 +1033,40 @@ class UserManager
         return $executeQuery ?
             $this->pagerFactory->createPagerFromArray($users, $page, $max) :
             $this->pagerFactory->createPager($users, $page, $max);
+    }
+
+    public function refreshUserToken()
+    {
+        $sc = $this->container->get('security.context');
+        $token = $sc->getToken();
+        $user = $sc->getToken()->getUser();
+        $roles = $user->getRoles();
+
+//        throw new \Exception(var_dump($this->isImpersonated()));
+        if ($this->isImpersonated()) {
+            foreach ($token->getRoles() as $role) {
+                if ($role instanceof SwitchUserRole) {
+                    $sourceToken = $role->getSource();
+                }
+            }
+
+            $roles[] = new SwitchUserRole('ROLE_PREVIOUS_ADMIN', $sourceToken);
+        }
+
+        $token = new UsernamePasswordToken($user, null, 'main', $roles);
+        $sc->setToken($token);
+    }
+
+    public function isImpersonated()
+    {
+        if ($token = $this->container->get('security.context')->getToken()) {
+            foreach ($token->getRoles() as $role) {
+                if (get_class($role) === 'Symfony\Component\Security\Core\Role\SwitchUserRole') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

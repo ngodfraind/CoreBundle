@@ -639,8 +639,7 @@ class WorkspaceManager
             );
         }
 
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->container->get('security.context')->setToken($token);
+        $this->container->get('claroline.manager.user_manager')->refreshUserToken();
 
         return $user;
     }

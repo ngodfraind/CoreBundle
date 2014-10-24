@@ -393,7 +393,11 @@ class WorkspaceParametersController extends Controller
             $this->workspaceManager->importInExistingWorkspace($config, $workspace);
         }
 
-        return new Response('YOLOOOOLOOLLO');
+        return $this->redirect(
+            $this->generateUrl(
+                'claro_workspace_open_tool', array('workspaceId' => $workspace->getId(), 'toolName' => 'home')
+            )
+        );
     }
 
     private function checkAccess(Workspace $workspace)
