@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.4.1",
         "ext-mcrypt": "*",
-        "symfony/symfony": "~2.5",
+        "symfony/symfony": "~2.5.0",
         "symfony/assetic-bundle": "~2.5",
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.6",
