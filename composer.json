@@ -58,8 +58,7 @@
         "claroline/migration-bundle": "~1.0",
         "icap/notification-bundle": "~1.0",
         "johngrogg/ics-parser": "dev-master",
-        "gregwar/captcha-bundle": "~1.0",
-        "innova/angular-ui-translation-bundle": "2.0.0"
+        "gregwar/captcha-bundle": "~1.0"
     },
     "require-dev": {
         "mockery/mockery": "dev-master@dev",
