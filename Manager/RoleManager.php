@@ -541,17 +541,6 @@ class RoleManager
     }
 
     /**
-     * @param \Claroline\CoreBundle\Entity\Workspace\Workspace $workspace
-     * @param \Claroline\CoreBundle\Entity\Tool\Tool                   $tool
-     *
-     * @return \Claroline\CoreBundle\Entity\Role[]
-     */
-    public function getRolesByWorkspaceAndTool(Workspace $workspace, Tool $tool)
-    {
-        return $this->roleRepo->findByWorkspaceAndTool($workspace, $tool);
-    }
-
-    /**
      * @param string $search
      *
      * @return \Claroline\CoreBundle\Entity\Role[]
@@ -612,6 +601,11 @@ class RoleManager
     public function getAllWhereWorkspaceIsDisplayable()
     {
         return $this->roleRepo->findAllWhereWorkspaceIsDisplayable();
+    }
+
+    public function getAllWhereWorkspaceIsDisplayableAndInList(array $workspaces)
+    {
+        return $this->roleRepo->findAllWhereWorkspaceIsDisplayableAndInList($workspaces);
     }
 
     /**
@@ -867,5 +861,18 @@ class RoleManager
     public function getWorkspaceRoleWithToolAccess(Workspace $workspace)
     {
         return $this->roleRepo->findWorkspaceRoleWithToolAccess($workspace);
+    }
+
+    public function getWorkspaceRoleByNameOrTranslationKey(
+        Workspace $workspace,
+        $translationKey,
+        $executeQuery = true
+    )
+    {
+        return $this->roleRepo->findWorkspaceRoleByNameOrTranslationKey(
+            $workspace,
+            $translationKey,
+            $executeQuery
+        );
     }
 }

@@ -186,7 +186,12 @@ class UserRepository extends EntityRepository implements UserProviderInterface
      *
      * @return User[]|Query
      */
-    public function findByGroup(Group $group, $executeQuery = true, $orderedBy = 'id', $order = null)
+    public function findByGroup(
+        Group $group,
+        $executeQuery = true,
+        $orderedBy = 'id',
+        $order = 'ASC'
+    )
     {
         $dql = "
             SELECT DISTINCT u FROM Claroline\CoreBundle\Entity\User u
@@ -212,7 +217,13 @@ class UserRepository extends EntityRepository implements UserProviderInterface
      *
      * @return User[]|Query
      */
-    public function findByNameAndGroup($search, Group $group, $executeQuery = true, $orderedBy = 'id')
+    public function findByNameAndGroup(
+        $search,
+        Group $group,
+        $executeQuery = true,
+        $orderedBy = 'id',
+        $order = 'ASC'
+    )
     {
         $dql = "
             SELECT DISTINCT u FROM Claroline\CoreBundle\Entity\User u
@@ -222,7 +233,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
             OR UPPER(u.lastName) LIKE :search
             OR UPPER(u.firstName) LIKE :search)
             AND u.isEnabled = true
-            ORDER BY u.{$orderedBy}
+            ORDER BY u.{$orderedBy} {$order}
         ";
         $upperSearch = strtoupper($search);
         $query = $this->_em->createQuery($dql);
@@ -1195,5 +1206,35 @@ class UserRepository extends EntityRepository implements UserProviderInterface
         $query = $this->_em->createQuery($dql);
 
         return $query->getResult();
+    }
+
+    public function findOneUserByUsername($username, $executeQuery = true)
+    {
+        $dql = '
+            SELECT u
+            FROM Claroline\CoreBundle\Entity\User u
+            WHERE u.username = :username
+        ';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter('username', $username);
+
+        return $executeQuery ? $query->getOneOrNullResult() : $query;
+    }
+
+    public function findUserByUsernameOrMail($username, $mail, $executeQuery = true)
+    {
+        $dql = '
+            SELECT u
+            FROM Claroline\CoreBundle\Entity\User u
+            WHERE u.username = :username
+            OR u.mail = :mail
+        ';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter('username', $username);
+        $query->setParameter('mail', $mail);
+
+        return $executeQuery ? $query->getOneOrNullResult() : $query;
     }
 }

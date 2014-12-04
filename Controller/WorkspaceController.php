@@ -26,6 +26,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 use Claroline\CoreBundle\Entity\Model\WorkspaceModel;
+use Claroline\CoreBundle\Entity\Resource\ResourceNode;
 use Claroline\CoreBundle\Entity\User;
 use Claroline\CoreBundle\Entity\Workspace\Workspace;
 use Claroline\CoreBundle\Entity\Workspace\WorkspaceTag;
@@ -849,6 +850,64 @@ class WorkspaceController extends Controller
 
     /**
      * @EXT\Route(
+     *     "/list/non/personal/workspaces/page/{page}/max/{max}/search/{search}",
+     *     name="claro_all_non_personal_workspaces_list_pager",
+     *     defaults={"page"=1,"max"=20,"seach"=""},
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template()
+     *
+     * @param integer $page
+     *
+     * @return array
+     */
+    public function nonPersonalWorkspacesListPagerAction(
+        $page = 1,
+        $max = 20,
+        $search = ''
+    )
+    {
+        $nonPersonalWs = $this->workspaceManager
+            ->getDisplayableNonPersonalWorkspaces($page, $max, $search);
+
+        return array(
+            'nonPersonalWs' => $nonPersonalWs,
+            'max' => $max,
+            'search' => $search
+        );
+    }
+
+    /**
+     * @EXT\Route(
+     *     "/list/personal/workspaces/page/{page}/max/{max}/search/{search}",
+     *     name="claro_all_personal_workspaces_list_pager",
+     *     defaults={"page"=1,"max"=20,"seach"=""},
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template()
+     *
+     * @param integer $page
+     *
+     * @return array
+     */
+    public function personalWorkspacesListPagerAction(
+        $page = 1,
+        $max = 20,
+        $search = ''
+    )
+    {
+        $personalWs = $this->workspaceManager
+            ->getDisplayablePersonalWorkspaces($page, $max, $search);
+
+        return array(
+            'personalWs' => $personalWs,
+            'max' => $max,
+            'search' => $search
+        );
+    }
+
+    /**
+     * @EXT\Route(
      *     "/list/workspaces/self_reg/page/{page}",
      *     name="claro_all_workspaces_list_with_self_reg_pager",
      *     defaults={"page"=1},
@@ -985,6 +1044,64 @@ class WorkspaceController extends Controller
         $workspaces = $this->tagManager->getPagerAllWorkspaces($page);
 
         return array('workspaces' => $workspaces);
+    }
+
+    /**
+     * @EXT\Route(
+     *     "/registration/list/non/personal/workspaces/page/{page}/max/{max}/search/{search}",
+     *     name="claro_all_non_personal_workspaces_list_registration_pager",
+     *     defaults={"page"=1,"max"=20,"seach"=""},
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template()
+     *
+     * @param integer $page
+     *
+     * @return array
+     */
+    public function nonPersonalWorkspacesListRegistrationPagerAction(
+        $page = 1,
+        $max = 20,
+        $search = ''
+    )
+    {
+        $nonPersonalWs = $this->workspaceManager
+            ->getDisplayableNonPersonalWorkspaces($page, $max, $search);
+
+        return array(
+            'nonPersonalWs' => $nonPersonalWs,
+            'max' => $max,
+            'search' => $search
+        );
+    }
+
+    /**
+     * @EXT\Route(
+     *     "/registration/list/personal/workspaces/page/{page}/max/{max}/search/{search}",
+     *     name="claro_all_personal_workspaces_list_registration_pager",
+     *     defaults={"page"=1,"max"=20,"seach"=""},
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template()
+     *
+     * @param integer $page
+     *
+     * @return array
+     */
+    public function personalWorkspacesListRegistrationPagerAction(
+        $page = 1,
+        $max = 20,
+        $search = ''
+    )
+    {
+        $personalWs = $this->workspaceManager
+            ->getDisplayablePersonalWorkspaces($page, $max, $search);
+
+        return array(
+            'personalWs' => $personalWs,
+            'max' => $max,
+            'search' => $search
+        );
     }
 
     /**
@@ -1268,6 +1385,64 @@ class WorkspaceController extends Controller
         $route = $this->router->generate('claro_workspace_by_user');
 
         return new RedirectResponse($route);
+    }
+
+    /**
+     * @EXT\Route(
+     *     "/list/all/workspaces/pager/page/{page}/max/{wsMax}/resource/{resource}/search/{wsSearch}",
+     *     name="claro_all_workspaces_list_pager_for_resource_rights",
+     *     defaults={"page"=1,"wsMax"=10,"seach"=""},
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template()
+     *
+     * @param ResourceNode $resource
+     * @param integer $page
+     * @param integer $wsMax
+     * @param string $wsSearch
+     *
+     * @return array
+     */
+    public function allWorkspacesListPagerForResourceRightsAction(
+        ResourceNode $resource,
+        $page = 1,
+        $wsMax = 10,
+        $wsSearch = ''
+    )
+    {
+        if ($wsSearch === '') {
+            $workspaces = $this->workspaceManager
+                ->getDisplayableWorkspacesPager($page, $wsMax);
+        } else {
+            $workspaces = $this->workspaceManager
+                ->getDisplayableWorkspacesBySearchPager($wsSearch, $page, $wsMax);
+        }
+        $workspaceRoles = array();
+        $roles = $this->roleManager->getAllWhereWorkspaceIsDisplayableAndInList(
+            $workspaces->getCurrentPageResults()
+        );
+
+        foreach ($roles as $role) {
+            $wsRole = $role->getWorkspace();
+
+            if (!is_null($wsRole)) {
+                $code = $wsRole->getCode();
+
+                if (!isset($workspaceRoles[$code])) {
+                    $workspaceRoles[$code] = array();
+                }
+
+                $workspaceRoles[$code][] = $role;
+            }
+        }
+
+        return array(
+            'workspaces' => $workspaces,
+            'wsMax' => $wsMax,
+            'wsSearch' => $wsSearch,
+            'workspaceRoles' => $workspaceRoles,
+            'resource' => $resource
+        );
     }
 
     private function createWorkspaceFromModel(WorkspaceModel $model, FormInterface $form)

@@ -102,16 +102,17 @@ class HomeManager
      *
      * @return array
      */
-    public function contentLayout($type, $father = null, $region = null)
+    public function contentLayout($type, $father = null, $region = null, $admin = null)
     {
-        $content = $this->getContentByType($type, $father, $region);
+        $type = $this->type->findOneBy(array('name' => $type));
+        $content = $this->getContentByType($type->getName(), $father, $region);
         $array = null;
 
-        //or is_object($this->type->findOneBy(array('name' => $type)))
-        if ($content) {
+        if ($content and ($type->isPublish() or $admin)) {
             $array = array();
             $array['content'] = $content;
-            $array['type'] = $type;
+            $array['type'] = $type->getName();
+            $array['publish'] = $type->isPublish();
             $array = $this->homeService->isDefinedPush($array, 'father', $father);
             $array = $this->homeService->isDefinedPush($array, 'region', $region);
         }
@@ -295,13 +296,13 @@ class HomeManager
      *
      * @return This function doesn't return anything.
      */
-    public function reorderContent($type, $a, $b = null)
+    public function reorderContent($type, $a, $b = null, $father = null)
     {
-        $a = $this->contentType->findOneBy(array('type' => $type, 'content' => $a));
+        $a = $this->getNode($type, $a, $father);
         $a->detach();
 
         if ($b) {
-            $b = $this->contentType->findOneBy(array('type' => $type, 'content' => $b));
+            $b = $this->getNode($type, $b, $father);
             $a->setBack($b->getBack());
             $a->setNext($b);
 
@@ -311,7 +312,7 @@ class HomeManager
 
             $b->setBack($a);
         } else {
-            $b = $this->contentType->findOneBy(array('type' => $type, 'next' => null));
+            $b = $this->getnode($type, null, $father);
             $a->setNext($b->getNext());
             $a->setBack($b);
             $b->setNext($a);
@@ -320,6 +321,26 @@ class HomeManager
         $this->manager->persist($a);
         $this->manager->persist($b);
         $this->manager->flush();
+    }
+
+    /**
+     * Get content node (type or sub content object)
+     */
+    public function getNode($type, $content = null, $father = null)
+    {
+        if (!$content) {
+            if ($father) {
+                return $this->subContent->findOneBy(array('father' => $father, 'next' => null));
+            }
+
+            return $this->contentType->findOneBy(array('type' => $type, 'next' => null));
+        }
+
+        if ($father) {
+            return $this->subContent->findOneBy(array('father' => $father, 'child' => $content));
+        }
+
+        return $this->contentType->findOneBy(array('type' => $type, 'content' => $content));
     }
 
     /**
@@ -419,6 +440,30 @@ class HomeManager
 
         $this->manager->remove($type);
         $this->manager->flush();
+    }
+
+    /**
+     * Publish content type page
+     *
+     * @param $type a content type
+     *
+     * @return boolean
+     */
+    public function publishType($type)
+    {
+        $publish = true;
+
+        if ($type instanceof Type and $type->getName() !== 'home' and $type->getName() !== 'menu') {
+            if ($type->isPublish()) {
+                $publish = false;
+            }
+
+            $type->setPublish($publish);
+            $this->manager->persist($type);
+            $this->manager->flush();
+        }
+
+        return $publish;
     }
 
     /**

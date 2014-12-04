@@ -139,13 +139,15 @@ class ResourceManager
         Workspace $workspace,
         ResourceNode $parent = null,
         ResourceIcon $icon = null,
-        array $rights = array()
+        array $rights = array(),
+        $isPublished = true
     )
     {
         $this->om->startFlushSuite();
         $this->checkResourcePrepared($resource);
         $node = $this->om->factory('Claroline\CoreBundle\Entity\Resource\ResourceNode');
         $node->setResourceType($resourceType);
+        $node->setPublished($isPublished);
 
         $mimeType = ($resource->getMimeType() === null) ?
             'custom/' . $resourceType->getName():
@@ -169,7 +171,6 @@ class ResourceManager
         $node->setName($name);
         $node->setPrevious($previous);
         $node->setClass(get_class($resource));
-        $node->setIsVisible(true);
 
         if (!is_null($parent)) {
             $node->setAccessibleFrom($parent->getAccessibleFrom());
@@ -182,7 +183,7 @@ class ResourceManager
         $this->om->persist($resource);
 
         if ($icon === null) {
-            $icon = $this->iconManager->getIcon($resource);
+            $icon = $this->iconManager->getIcon($resource, $workspace);
         }
 
         $parentPath = '';
@@ -218,7 +219,7 @@ class ResourceManager
     public function getUniqueName(ResourceNode $node, ResourceNode $parent = null, $isCopy = false)
     {
         $candidateName = $node->getName();
-
+        $nodeType = $node->getResourceType();
         //if the parent is null, then it's a workspace root and the name is always correct
         //otherwise we fetch each workspace root with the findBy and the UnitOfWork won't be happy...
         if (!$parent) return $candidateName;
@@ -235,8 +236,9 @@ class ResourceManager
                 // same name is also incremented
                 continue;
             }
-
-            $siblingNames[] = $levelNode->getName();
+            if ($levelNode->getResourceType() === $nodeType) {
+                $siblingNames[] = $levelNode->getName();
+            }
         }
 
         if (!in_array($candidateName, $siblingNames)) {
@@ -289,10 +291,11 @@ class ResourceManager
      *
      * @return array
      */
-    public function findAndSortChildren(ResourceNode $parent)
+    public function findAndSortChildren(ResourceNode $parent, User $user)
     {
         //a little bit hacky but retrieve all children of the parent
-        $nodes = $this->resourceNodeRepo->findChildren($parent, array('ROLE_ADMIN'));
+        $nodes = $this->resourceNodeRepo
+            ->findChildren($parent, array('ROLE_ADMIN'), $user);
         $sorted = array();
         //set the 1st item.
         foreach ($nodes as $node) {
@@ -332,14 +335,14 @@ class ResourceManager
      *
      * @return array
      */
-    public function sort(array $nodes)
+    public function sort(array $nodes, User $user)
     {
         $sortedResources = array();
 
         if (count($nodes) > 0) {
             if ($this->haveSameParents($nodes)) {
                 $parent = $this->resourceNodeRepo->find($nodes[0]['parent_id']);
-                $sortedList = $this->findAndSortChildren($parent);
+                $sortedList = $this->findAndSortChildren($parent, $user);
 
                 foreach ($sortedList as $sortedItem) {
                     foreach ($nodes as $node) {
@@ -572,8 +575,8 @@ class ResourceManager
     /**
      * Moves a resource.
      *
-     * @param ResourceNode $child
-     * @param ResourceNode $parent
+     * @param ResourceNode $child currently treated node
+     * @param ResourceNode $parent old parent
      *
      * @throws ResourceMoveException
      *
@@ -584,13 +587,18 @@ class ResourceManager
         if ($parent === $child) {
             throw new ResourceMoveException("You cannot move a directory into itself");
         }
-
+        $this->om->startFlushSuite();
         $this->removePosition($child);
         $this->setLastPosition($parent, $child);
         $child->setParent($parent);
         $child->setName($this->getUniqueName($child, $parent));
+
+        if ($child->getWorkspace()->getId() !== $parent->getWorkspace()->getId()) {
+
+            $this->updateWorkspace($child, $parent->getWorkspace());
+        }
         $this->om->persist($child);
-        $this->om->flush();
+        $this->om->endFlushSuite();
         $this->dispatcher->dispatch('log', 'Log\LogResourceMove', array($child, $parent));
 
         return $child;
@@ -633,19 +641,17 @@ class ResourceManager
         $node->setNext(null);
         $this->om->persist($node);
 
-        if ($next) {
-            $this->removePreviousWherePreviousIs($previous);
-            $next->setPrevious($previous);
-            $this->om->persist($next);
-        }
-
         if ($previous) {
-            $this->removeNextWhereNextIs($next);
             $previous->setNext($next);
             $this->om->persist($previous);
         }
 
-        $this->om->flush();
+        if ($next) {
+            $next->setPrevious($previous);
+            $this->om->persist($next);          
+        }
+
+        $this->om->forceFlush();
     }
 
     /**
@@ -842,7 +848,7 @@ class ResourceManager
         $resourceArray['large_icon'] = $node->getIcon()->getRelativeUrl();
         $resourceArray['path_for_display'] = $node->getPathForDisplay();
         $resourceArray['mime_type'] = $node->getMimeType();
-        $resourceArray['is_visible'] = $node->getIsVisible();
+        $resourceArray['published'] = $node->isPublished();
 
         if ($node->getPrevious() !== null) {
             $resourceArray['previous_id'] = $node->getPrevious()->getId();
@@ -881,7 +887,7 @@ class ResourceManager
         if ($node->getParent() === null) {
             throw new \LogicException('Root directory cannot be removed');
         }
-
+        $workspace = $node->getWorkspace();
         $this->removePosition($node);
         $this->om->startFlushSuite();
         $nodes = $this->getDescendants($node);
@@ -904,6 +910,14 @@ class ResourceManager
 
                     foreach ($event->getFiles() as $file) {
                         unlink($file);
+
+                        $dir = $this->container->getParameter('claroline.param.files_directory') .
+                            DIRECTORY_SEPARATOR .
+                            $workspace->getCode();
+
+                        if (is_dir($dir) && $this->isDirectoryEmpty($dir)) {
+                            rmdir($dir);
+                        }
                     }
                 }
 
@@ -914,7 +928,7 @@ class ResourceManager
                 );
 
                 if ($node->getIcon()) {
-                    $this->iconManager->delete($node->getIcon());
+                    $this->iconManager->delete($node->getIcon(), $workspace);
                 }
 
                 /*
@@ -929,7 +943,7 @@ class ResourceManager
         }
 
         if ($node->getIcon()) {
-            $this->iconManager->delete($node->getIcon());
+            $this->iconManager->delete($node->getIcon(), $workspace);
         }
 
         $this->om->remove($node);
@@ -1111,7 +1125,7 @@ class ResourceManager
     public function changeIcon(ResourceNode $node, UploadedFile $file)
     {
         $this->om->startFlushSuite();
-        $icon = $this->iconManager->createCustomIcon($file);
+        $icon = $this->iconManager->createCustomIcon($file, $node->getWorkspace());
         $this->iconManager->replace($node, $icon);
         $this->logChangeSet($node);
         $this->om->endFlushSuite();
@@ -1209,11 +1223,16 @@ class ResourceManager
      *
      * @return array
      */
-    public function getChildren(ResourceNode $node, array $roles, $isSorted = true)
+    public function getChildren(
+        ResourceNode $node,
+        array $roles,
+        User $user,
+        $isSorted = true
+    )
     {
-        $children = $this->resourceNodeRepo->findChildren($node, $roles);
+        $children = $this->resourceNodeRepo->findChildren($node, $roles, $user);
 
-        return ($isSorted) ? $this->sort($children): $children;
+        return ($isSorted) ? $this->sort($children, $user): $children;
     }
 
     /**
@@ -1400,7 +1419,7 @@ class ResourceManager
         $newNode->setMimeType($node->getMimeType());
         $newNode->setAccessibleFrom($node->getAccessibleFrom());
         $newNode->setAccessibleUntil($node->getAccessibleUntil());
-        $newNode->setIsVisible($node->getIsVisible());
+        $newNode->setPublished($node->isPublished());
 
         if ($withRights) {
             //if everything happens inside the same workspace and no specific rights have been given,
@@ -1521,7 +1540,10 @@ class ResourceManager
     public function resetIcon(ResourceNode $node)
     {
         $this->om->startFlushSuite();
-        $icon = $this->iconManager->getIcon($this->getResourceFromNode($node));
+        $icon = $this->iconManager->getIcon(
+            $this->getResourceFromNode($node),
+            $node->getWorkspace()
+        );
         $node->setIcon($icon);
         $this->om->endFlushSuite();
     }
@@ -1569,4 +1591,40 @@ class ResourceManager
         return $this->dispatcher->hasListeners($actionName . '_' . $resourceType->getName());
     }
 
+    private function isDirectoryEmpty($dirName)
+    {
+        $files = array ();
+        $dirHandle = opendir($dirName);
+
+        if ($dirHandle) {
+
+            while ($file = readdir($dirHandle)) {
+
+                if ($file !== '.' && $file !== '..') {
+                    $files[] = $file;
+                    break;
+                }
+            }
+            closedir($dirHandle);
+        }
+
+        return count($files) === 0;
+    }
+
+    private function updateWorkspace(ResourceNode $node, Workspace $workspace)
+    {
+        $this->om->startFlushSuite();
+        $node->setWorkspace($workspace);
+        $this->om->persist($node);
+
+        if ($node->getResourceType()->getName() === 'directory') {
+            $children = $this->resourceNodeRepo->getChildren($node);
+
+            foreach ($children as $child) {
+                $child->setWorkspace($workspace);
+                $this->om->persist($child);
+            }
+        }
+        $this->om->endFlushSuite();
+    }
 }

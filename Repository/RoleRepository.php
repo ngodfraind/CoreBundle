@@ -16,9 +16,8 @@ use Claroline\CoreBundle\Entity\Role;
 use Claroline\CoreBundle\Entity\Workspace\Workspace;
 use Claroline\CoreBundle\Entity\User;
 use Claroline\CoreBundle\Entity\Group;
-use Claroline\CoreBundle\Entity\Tool\Tool;
+use Claroline\CoreBundle\Entity\Tool\ToolMaskDecoder;
 use Claroline\CoreBundle\Entity\Tool\AdminTool;
-use Claroline\CoreBundle\Entity\Facet\FieldFacet;
 use Claroline\CoreBundle\Entity\Resource\ResourceNode;
 
 class RoleRepository extends EntityRepository
@@ -171,31 +170,6 @@ class RoleRepository extends EntityRepository
         return $query->getResult();
     }
 
-    /**
-     * Returns the roles which have access to a workspace tool.
-     *
-     * @param \Claroline\CoreBundle\Entity\Workspace\Workspace $workspace
-     * @param \Claroline\CoreBundle\Entity\Tool\Tool                   $tool
-     */
-    public function findByWorkspaceAndTool(Workspace $workspace, Tool $tool)
-    {
-        $dql = "
-            SELECT DISTINCT r FROM Claroline\CoreBundle\Entity\Role r
-            JOIN r.workspace ws
-            JOIN ws.orderedTools ot
-            JOIN ot.roles r_2
-            JOIN ot.tool tool
-            WHERE ws.guid = '{$workspace->getGuid()}'
-            AND tool.id = {$tool->getId()}
-            AND r.id = r_2.id
-            AND r.name != 'ROLE_ADMIN'
-        ";
-
-        $query = $this->_em->createQuery($dql);
-
-        return $query->getResult();
-    }
-
     public function findRolesByWorkspaceAndRoleNames(
         Workspace $workspace,
         array $roles
@@ -312,6 +286,27 @@ class RoleRepository extends EntityRepository
         $query = $this->_em->createQuery($dql);
 
         return $query->getResult();
+    }
+
+    public function findAllWhereWorkspaceIsDisplayableAndInList(array $workspaces)
+    {
+        if (count($workspaces) === 0) {
+
+            return array();
+        } else {
+            $dql = "
+                SELECT r, w
+                FROM Claroline\CoreBundle\Entity\Role r
+                JOIN r.workspace w
+                WHERE w.displayable = true
+                AND w IN (:workspaces)
+            ";
+
+            $query = $this->_em->createQuery($dql);
+            $query->setParameter('workspaces', $workspaces);
+
+            return $query->getResult();
+        }
     }
 
     public function findByAdminTool(AdminTool $adminTool)
@@ -495,9 +490,11 @@ class RoleRepository extends EntityRepository
                 OR EXISTS (
                     SELECT ot
                     FROM Claroline\CoreBundle\Entity\Tool\OrderedTool ot
-                    JOIN ot.roles otr
+                    JOIN ot.rights otr
+                    JOIN otr.role otrr
                     WHERE ot.workspace = :workspace
-                    AND otr = r
+                    AND otrr = r
+                    AND BIT_AND(otr.mask, :openValue) = :openValue
                 )
             )
         ';
@@ -505,8 +502,35 @@ class RoleRepository extends EntityRepository
         $query = $this->_em->createQuery($dql);
         $query->setParameter('workspace', $workspace);
         $query->setParameter('managerRoleName', 'ROLE_WS_MANAGER_' . $workspace->getGuid());
-
+        $query->setParameter('openValue', ToolMaskDecoder::$defaultValues['open']);
 
         return $query->getResult();
+    }
+
+    public function findWorkspaceRoleByNameOrTranslationKey(
+        Workspace $workspace,
+        $translationKey,
+        $executeQuery = true
+    )
+    {
+        $dql = '
+            SELECT r
+            FROM Claroline\CoreBundle\Entity\Role r
+            WHERE r.workspace = :workspace
+            AND (
+                r.name = :roleName
+                OR UPPER(r.translationKey) = :key
+            )
+        ';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter('workspace', $workspace);
+        $query->setParameter('key', strtoupper($translationKey));
+        $query->setParameter(
+            'roleName',
+            'ROLE_WS_' . strtoupper($translationKey) . '_' . $workspace->getGuid()
+        );
+
+        return $executeQuery ? $query->getOneOrNullResult() : $query;
     }
 }
