@@ -39,7 +39,10 @@ class ExternalAuthenticator implements SimpleFormAuthenticatorInterface
      * })
      *
      */
-    public function __construct(EncoderFactoryInterface $encoderFactory,AuthenticationManager $authenticationManager)
+    public function __construct(
+        EncoderFactoryInterface $encoderFactory,
+        AuthenticationManager $authenticationManager
+    )
     {
         $this->encoderFactory = $encoderFactory;
         $this->authenticationManager = $authenticationManager;
@@ -47,10 +50,28 @@ class ExternalAuthenticator implements SimpleFormAuthenticatorInterface
 
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
+        $userExists = false;
+
         try {
             $user = $userProvider->loadUserByUsername($token->getUsername());
+            $userExists = true;
         } catch (UsernameNotFoundException $e) {
-            throw new AuthenticationException('Invalid username or password');
+            //if we can create the user on the fly
+            //loop through all the authentication sources availables.
+            $drivers = $this->authenticationManager->getDrivers();
+
+            foreach ($drivers as $driver) {
+                $userExists = $this->authenticationManager->authenticate(
+                    $driver,
+                    $token->getUsername(),
+                    $token->getCredentials()
+                );
+
+                if ($userExists) {
+                    die('found you, therefore I must create you !');
+                    break;
+                }
+            }
         }
 
         $encoder = $this->encoderFactory->getEncoder($user);
@@ -99,4 +120,3 @@ class ExternalAuthenticator implements SimpleFormAuthenticatorInterface
         return new UsernamePasswordToken($username, $password, $providerKey);
     }
 }
-
