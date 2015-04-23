@@ -35,7 +35,7 @@
                 {% if role.getName() == 'ROLE_USER' %}
                     <div class="alert alert-danger"> {{ 'user_limit_reached'|trans({}, 'platform') }}</div>
                 {% else %}
-                    <div class="alert alert-warning"> {{ 'role_limit_reached'|trans({'%translationKey%': role.getTranslationKey()|trans({}, 'platform')}, 'platform') }}</div>
+                    <div class="alert alert-warning"> {{ 'role_limit_reached'|trans({'%translationKey%': role.getDisplayedName() }}</div>
                 {% endif %}
             {% endfor %}
             {{ form_widget(form_complete_user) }}

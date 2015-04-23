@@ -28,9 +28,17 @@ class RoleTranslationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add(
-            'translationKey',
-            'text',
-            array('required' => true, 'constraints' => new RoleName(array('wsGuid' => $this->wsGuid)))
+            'displayedName',
+            'translatable',
+            array(
+                'data' => $builder->getData(),
+                'theme_options' => array(
+                    'titlePlaceHolder' => 'tool name',
+                    'contentText' => false,
+                    'tinymce' => false
+                ),
+                'label' => 'name'
+            )
         );
     }
 

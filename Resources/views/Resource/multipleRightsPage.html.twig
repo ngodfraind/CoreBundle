@@ -39,7 +39,7 @@
                                         {% if role.getName() != 'ROLE_WS_MANAGER_' ~ workspace.getGuid() %}
                                             <a class="workspace-role-item list-group-item"
                                                href="{{ path('claro_resource_right_form', {'node':resource.id, 'role':role.id}) }}">
-                                                {{ role.getTranslationKey() }}
+                                                {{ role.getDisplayedName() }}
                                             </a>
                                         {% endif %}
                                     {% endfor %}
@@ -179,7 +179,7 @@
                                     {% set roleId = resourceRight.getRole().getId() %}
                                     <tr class="role {{ resourceRight.getRole().getName() | lower | replace({'role_': ''}) }}">
                                         <td>
-                                            {{ resourceRight.getRole().getTranslationKey()|trans({}, 'platform') }}
+                                            {{ resourceRight.getRole().getDisplayedName() }}
                                             {% if resourceRight.getRole().getWorkspace() is not null %}
                                                 <em> ({{ resourceRight.getRole().getWorkspace().getCode() }}) </em>
                                             {% endif %}
@@ -224,14 +224,14 @@
                             </a>
                         </div>
                         <div id="collapse-all" class="panel-body collapse {% if tags|length == 0 %}in{% endif %}">
-                            <div id="all-workspaces-panel">      
+                            <div id="all-workspaces-panel">
                                 <div id="workspaces-datas"
                                      data-node-id="{{ resource.getId() }}"
                                      data-search="{{ wsSearch }}"
                                      data-max="{{ wsMax }}"
                                 >
                                 </div>
-                            
+
                                 {% if wsSearch != '' %}
                                     <div class="alert alert-info">
                                         {{ 'results_for_search_on'|trans({}, 'platform') }} :
@@ -255,11 +255,11 @@
                                 </div>
                                 <br>
                                 <br>
-                            
+
                                 {% if workspaces.getNbPages() > 1 %}
                                      {{ renderPager(workspaces, wsSearch, wsMax, resource) }}
                                 {% endif %}
-                            
+
                                 {% for workspace in workspaces %}
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
@@ -276,14 +276,14 @@
                                                 {% if 'ROLE_WS_MANAGER' in role.getName() != 1 %}
                                                     <a class="workspace-role-item list-group-item"
                                                        href="{{ path('claro_resource_right_form', {'node':resource.id, 'role':role.id}) }}">
-                                                        {{ role.getTranslationKey()|trans({}, 'platform') }}
+                                                        {{ role.getDisplayedName() }}
                                                     </a>
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
                                     </div>
                                 {% endfor %}
-                            
+
                                 {% if workspaces.getNbPages() > 1 %}
                                      {{ renderPager(workspaces, wsSearch, wsMax, resource) }}
                                 {% endif %}
@@ -296,7 +296,7 @@
             </div>
 
 {# ------------------------------ USER WITH RIGHTS TAB ----------------------------------- #}
-    
+
             <div class="tab-pane" id="users-with-rights-list">
                 <div class="{{ mode }}-body padding-top-none {% if isModal %}padding-bottom-none{% endif %} table-responsive"
                      id="users-with-rights-tab"
@@ -317,7 +317,7 @@
             </div>
 
 {# ------------------------------ USERS WITHOUT RIGHTS TAB ----------------------------------- #}
-    
+
             <div class="tab-pane" id="users-without-rights-list">
                 <div class="{{ mode }}-body padding-top-none {% if isModal %}padding-bottom-none{% endif %} table-responsive"
                      id="users-without-rights-tab"
@@ -336,9 +336,9 @@
                 </div>
                 {{ block('formfooter') }}
             </div>
-   
+
 {# --------------------------------- END ------------------------------------- #}
-                
+
         </div>
     </form>
 </div>

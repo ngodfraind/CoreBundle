@@ -301,17 +301,19 @@ class ResourceRightsController
         foreach ($users as $user) {
             $roleKeys[] = $user->getUsername();
         }
+
         $usersRolesRaw = $this->roleManager
             ->getUserRolesByTranslationKeys($roleKeys);
 
         foreach ($usersRolesRaw as $userRole) {
-            $usersRoles[$userRole->getTranslationKey()] = $userRole;
+            $usersRoles[$userRole->getDisplayedName()] = $userRole;
         }
+
         $userRolesRights = $this->rightsManager
             ->getUserRolesResourceRights($node, $roleKeys);
 
         foreach ($userRolesRights as $right) {
-            $usersRights[$right->getRole()->getTranslationKey()] = $right;
+            $usersRights[$right->getRole()->getDisplayedName()] = $right;
         }
 
         return array(
@@ -386,13 +388,13 @@ class ResourceRightsController
             ->getUserRolesByTranslationKeys($roleKeys);
 
         foreach ($usersRolesRaw as $userRole) {
-            $usersRoles[$userRole->getTranslationKey()] = $userRole;
+            $usersRoles[$userRole->getDisplayedName()] = $userRole;
         }
         $userRolesRights = $this->rightsManager
             ->getUserRolesResourceRights($node, $roleKeys);
 
         foreach ($userRolesRights as $right) {
-            $usersRights[$right->getRole()->getTranslationKey()] = $right;
+            $usersRights[$right->getRole()->getDisplayedName()] = $right;
         }
 
         return array(

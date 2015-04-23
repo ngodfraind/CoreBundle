@@ -87,7 +87,7 @@ class RoleManager
     {
         $role = new Role();
         $role->setName($name);
-        $role->setTranslationKey($translationKey);
+        $this->setDefaultRoleTranslation($role, $translationKey, false);
         $role->setReadOnly($isReadOnly);
         $role->setType(Role::WS_ROLE);
         $role->setWorkspace($workspace);
@@ -109,7 +109,7 @@ class RoleManager
     {
         $role = $this->om->factory('Claroline\CoreBundle\Entity\Role');
         $role->setName($name);
-        $role->setTranslationKey($translationKey);
+        $this->setDefaultRoleTranslation($role, $translationKey, false);
         $role->setReadOnly($isReadOnly);
         $role->setPersonalWorkspaceCreationEnabled(true);
         $role->setType(Role::PLATFORM_ROLE);
@@ -132,7 +132,7 @@ class RoleManager
     {
         $role = $this->om->factory('Claroline\CoreBundle\Entity\Role');
         $role->setName($name);
-        $role->setTranslationKey($translationKey);
+        $this->setDefaultRoleTranslation($role, $translationKey, false);
         $role->setReadOnly($isReadOnly);
         $role->setType(Role::CUSTOM_ROLE);
 
@@ -159,7 +159,7 @@ class RoleManager
 
             $role = $this->om->factory('Claroline\CoreBundle\Entity\Role');
             $role->setName($roleName);
-            $role->setTranslationKey($username);
+            $this->setDefaultRoleTranslation($role, $username, false);
             $role->setReadOnly(true);
             $role->setType(Role::USER_ROLE);
             $this->om->persist($role);
@@ -177,7 +177,7 @@ class RoleManager
     {
         $roleName = 'ROLE_USER_' . strtoupper($username);
         $role->setName($roleName);
-        $role->setTranslationKey($username);
+        $this->setDefaultRoleTranslation($role, $username, false);
         $this->om->persist($role);
         $this->om->flush();
     }
@@ -729,7 +729,7 @@ class RoleManager
         $role = new Role();
         $role->setType($translationKey);
         $role->setName('ROLE_' . strtoupper($translationKey));
-        $role->setTranslationKey($translationKey);
+        $this->setDefaultRoleTranslation($role, $translationKey, false);
         $role->setReadOnly(false);
         $role->setType(Role::PLATFORM_ROLE);
         $this->om->persist($role);
@@ -764,11 +764,11 @@ class RoleManager
         if ($ars->hasRole($role->getName())) {
             return true;
         }
-        
+
         if ($role->getWorkspace()) {
             $maxUsers = $role->getWorkspace()->getMaxUsers();
             $countByWorkspace = $this->container->get('claroline.manager.workspace_manager')->countUsers($role->getWorkspace(), true);
-            
+
             if ($maxUsers <= $countByWorkspace) return false;
         }
 
@@ -952,5 +952,42 @@ class RoleManager
             $i++;
         }
         $this->om->endFlushSuite();
+    }
+
+    public function setDefaultRoleTranslation(Role $role, $translationKey, $autoflush = true)
+    {
+        $locales = $this->container->get('claroline.manager.locale_manager')->getAvailableLocales();
+        $repository = $this->om->getRepository('Claroline\CoreBundle\Entity\ContentTranslation');
+
+        foreach ($locales as $locale) {
+            $repository->translate(
+                $role,
+                'displayedName',
+                $locale,
+                $this->container->get('translator')->trans($translationKey, array(), 'platform', $locale)
+            );
+        }
+
+        $this->om->persist($role);
+        if ($autoflush) $this->om->flush();
+    }
+
+    public function renameRole($translations, Role $role)
+    {
+            $repository = $this->om->getRepository('Claroline\CoreBundle\Entity\ContentTranslation');
+
+            foreach ($translations as $lang => $translation) {
+                if (trim($translation['translation']) !== '') {
+                    $repository->translate(
+                        $role,
+                        'displayedName',
+                        $lang,
+                        $translation['translation']
+                    );
+                }
+            }
+
+            $this->om->persist($role);
+            $this->om->flush();
     }
 }

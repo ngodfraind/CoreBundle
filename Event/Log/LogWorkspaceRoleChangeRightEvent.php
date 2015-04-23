@@ -37,7 +37,7 @@ class LogWorkspaceRoleChangeRightEvent extends LogGenericEvent implements Mandat
         $this->changeSet = $changeSet;
         $this->details = array(
             'role' => array(
-                'name' => $role->getTranslationKey(),
+                'name' => $role->getDisplayedName(),
                 'changeSet' => $changeSet
             ),
             'workspace' => array(

@@ -12,7 +12,7 @@
         <form role="form" class="form-horizontal" action="{{ actionForm }}" method="post" {{ form_enctype(form) }} id="profile_form">
             <div class="panel-body">
                 {% for role in unavailableRoles %}
-                    <div class="alert alert-warning"> {{ 'role_limit_reached'|trans({'%translationKey%': role.getTranslationKey()|trans({}, 'platform')}, 'platform') }}</div>
+                    <div class="alert alert-warning"> {{ 'role_limit_reached'|trans({'%translationKey%': role.getDisplayedName()|trans({}, 'platform')}, 'platform') }}</div>
                 {% endfor %}
                 {{ form_widget(form) }}
             </div>

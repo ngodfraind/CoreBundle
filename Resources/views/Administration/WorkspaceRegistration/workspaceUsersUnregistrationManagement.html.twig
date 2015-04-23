@@ -96,7 +96,7 @@
         </h3>
         {{ macros.flashBox() }}
         <hr>
-        
+
         {% if search != '' %}
             <div class="alert alert-info">
                 {{ 'results_for_search_on'|trans({}, 'platform') }} :
@@ -116,13 +116,13 @@
             <div class="col-md-4 pull-right">
                 <div class="input-group margin-bottom-md">
                     <input class="form-control" type="text"
-                           id="search-subjects-input"  
-                           placeholder="{{ 'search'|trans({}, 'platform') }}" 
+                           id="search-subjects-input"
+                           placeholder="{{ 'search'|trans({}, 'platform') }}"
                            value="{{ search }}"
                     >
                     <span class="input-group-btn">
-                        <button class="filter btn btn-default" 
-                                type="button" 
+                        <button class="filter btn btn-default"
+                                type="button"
                                 id="search-subjects-btn"
                         >
                             <i class="fa fa-search"></i>
@@ -194,7 +194,7 @@
 
                                     {% if role.getWorkspace() == workspace %}
                                         <span class="label label-success role-element">
-                                            {{ role.getTranslationKey()|trans({}, 'platform') }}
+                                            {{ role.getDisplayedName() }}
                                             <i class="fa fa-times-circle pointer-hand remove-role-btn"
                                                data-subject-id="{{ user.getId() }}"
                                                data-role-id="{{ role.getId() }}"
@@ -210,7 +210,7 @@
                                     {% for role in group.getEntityRoles() %}
                                         {% if role.getWorkspace() == workspace %}
                                             <span class="label label-default">
-                                                {{ role.getTranslationKey()|trans({}, 'platform') }}
+                                                {{ role.getDisplayedName() }}
                                             </span>
                                             &nbsp;
                                         {% endif %}

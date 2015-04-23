@@ -24,11 +24,11 @@
     {% else %}
         {% set newOrder = 'ASC' %}
     {% endif %}
-    {{ 
+    {{
         path(
             'claro_resources_rights_users_with_rights_form',
             {
-                'node': nodeId, 
+                'node': nodeId,
                 'search': search,
                 'orderedBy': orderedBy,
                 'order': newOrder,
@@ -124,6 +124,7 @@
                                 <td>
                                     <input name="roles[{{ roleId }}][{{ decoder.getName() }}]"
                                            type="checkbox"
+
                                            {% if usersRights[user.getUsername()] is defined and
                                                 (usersRights[user.getUsername()].getMask() b-and decoder.getValue())
                                            %}
@@ -149,7 +150,7 @@
             </tbody>
         </table>
     </div>
-        
+
     {% if users.getNbPages() > 1 %}
         {{ renderPager(users, resource.getId(), search, orderedBy, order, max) }}
     {% endif %}
@@ -160,7 +161,7 @@
         {{ 'recursive_dir_action'|trans({}, 'platform')}}
     {% endif %}
 {% endif %}
-        
+
 <div id="users-with-rights-datas"
      data-node-id="{{ resource.getId() }}"
      data-search="{{ search }}"

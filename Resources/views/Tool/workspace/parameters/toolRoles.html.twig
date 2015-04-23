@@ -33,7 +33,7 @@
                         {% for role in roles %}
                             <th>
                             {% if role.getType == 1 %} <em> {% endif %}
-                            {{ role.getTranslationKey|trans({}, 'platform') }}
+                            {{ role.getDisplayedName() }}
                             {% if role.getType == 1 %} </em>{% endif %}
                             </th>
                         {% endfor %}

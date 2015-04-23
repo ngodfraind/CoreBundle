@@ -98,7 +98,7 @@ class GeneralType extends AbstractType
                     'class' => 'Claroline\CoreBundle\Entity\Role',
                     'expanded' => false,
                     'multiple' => false,
-                    'property' => 'translationKey',
+                    'property' => 'displayedName',
                     'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
                         return $er->createQueryBuilder('r')
                                 ->where("r.type = " . Role::PLATFORM_ROLE)

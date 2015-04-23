@@ -801,7 +801,7 @@ class WorkspaceController extends Controller
         foreach ($roles as $role) {
             $arWorkspace[$role->getWorkspace()->getCode()][$role->getName()] = array(
                 'name' => $role->getName(),
-                'translation_key' => $role->getTranslationKey(),
+                'translation_key' => $role->getDisplayedName(),
                 'id' => $role->getId(),
                 'workspace' => $role->getWorkspace()->getName()
             );

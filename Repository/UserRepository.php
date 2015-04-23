@@ -1011,7 +1011,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
 
     public function findUsersWithoutUserRole($executeQuery = true)
     {
-        $dql = '
+        $dql = "
             SELECT u
             FROM Claroline\CoreBundle\Entity\User u
             WHERE u.isEnabled = true
@@ -1020,9 +1020,9 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 SELECT r
                 FROM Claroline\CoreBundle\Entity\Role r
                 WHERE r.type = :type
-                AND r.translationKey = u.username
+                AND r.name = UPPER(CONCAT('ROLE_USER_', u.username))
             )
-        ';
+        ";
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('type', Role::USER_ROLE);
@@ -1049,7 +1049,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 JOIN rr.role r
                 LEFT JOIN rr.resourceTypes rt
                 WHERE rn = :resourceNode
-                AND r.translationKey = u.username
+                AND r.name = UPPER(CONCAT('ROLE_USER_', u.username))
                 AND
                 (
                     rr.mask > 0
@@ -1089,7 +1089,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 JOIN rr.role r
                 LEFT JOIN rr.resourceTypes rt
                 WHERE rn = :resourceNode
-                AND r.translationKey = u.username
+                AND r.name = UPPER(CONCAT('ROLE_USER_', u.username))
                 AND
                 (
                     rr.mask > 0
@@ -1136,7 +1136,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 JOIN rr.role r
                 LEFT JOIN rr.resourceTypes rt
                 WHERE rn = :resourceNode
-                AND r.translationKey = u.username
+                AND r.name = UPPER(CONCAT('ROLE_USER_', u.username))
                 AND
                 (
                     rr.mask > 0
@@ -1185,7 +1185,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 JOIN rr.role r
                 LEFT JOIN rr.resourceTypes rt
                 WHERE rn = :resourceNode
-                AND r.translationKey = u.username
+                AND r.name = UPPER(CONCAT('ROLE_USER_', u.username))
                 AND
                 (
                     rr.mask > 0
@@ -1300,7 +1300,7 @@ class UserRepository extends EntityRepository implements UserProviderInterface
 
         return $executeQuery ? $query->getSingleScalarResult() : $query;
     }
-    
+
     public function countByRoles(array $roles, $includeGrps)
     {
         if ($includeGrps) {
@@ -1313,10 +1313,10 @@ class UserRepository extends EntityRepository implements UserProviderInterface
                 WHERE r1 in (:roles)
                 AND u.isEnabled = true
                 OR r2 in (:roles)';
-                
+
                 $query = $this->_em->createQuery($dql);
                 $query->setParameter('roles', $roles);
-                
+
                 return $query->getSingleScalarResult();
         }
     }

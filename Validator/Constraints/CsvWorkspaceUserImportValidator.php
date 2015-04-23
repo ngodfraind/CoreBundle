@@ -59,7 +59,7 @@ class CsvWorkspaceUserImportValidator extends ConstraintValidator
         $workspaceRoles = $this->roleManager->getRolesByWorkspace($workspace);
 
         foreach ($workspaceRoles as $workspaceRole) {
-            $wsRoleNames[] = $workspaceRole->getTranslationKey();
+            $wsRoleNames[] = $workspaceRole->getDisplayedName();
         }
         $lines = str_getcsv(file_get_contents($value), PHP_EOL);
 

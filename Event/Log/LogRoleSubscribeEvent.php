@@ -32,7 +32,7 @@ class LogRoleSubscribeEvent extends LogGenericEvent implements NotifiableInterfa
     public function __construct(Role $role, AbstractRoleSubject $subject)
     {
         $this->role = $role;
-        $details = array('role' => array('name' => $role->getTranslationKey()));
+        $details = array('role' => array('name' => $role->getDisplayedName()));
 
         if ($role->getWorkspace()) {
             $details['workspace'] = array(

@@ -183,6 +183,12 @@ class ResourceRightsRepository extends EntityRepository
         $executeQuery = true
     )
     {
+        $roleKeys = array();
+
+        foreach ($keys as $username) {
+            $roleKeys[] = strtoupper('ROLE_USER_' . $username);
+        }
+
         $dql = '
             SELECT rights
             FROM Claroline\CoreBundle\Entity\Resource\ResourceRights rights
@@ -190,13 +196,13 @@ class ResourceRightsRepository extends EntityRepository
             JOIN rights.role role
             WHERE resource = :resource
             AND role.type = :type
-            AND role.translationKey IN (:keys)
+            AND role.name IN (:keys)
         ';
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('resource', $resource);
         $query->setParameter('type', Role::USER_ROLE);
-        $query->setParameter('keys', $keys);
+        $query->setParameter('keys', $roleKeys);
 
         return $executeQuery ? $query->getResult() : $query;
     }

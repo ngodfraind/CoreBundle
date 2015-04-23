@@ -103,13 +103,13 @@ class GroupManager
         $oldRolesTranslationKeys = array();
 
         foreach ($oldRoles as $oldRole) {
-            $oldRolesTranslationKeys[] = $oldRole->getTranslationKey();
+            $oldRolesTranslationKeys[] = $oldRole->getDisplayedName();
         }
 
         $newRolesTransactionKey = array();
 
         foreach ($newRoles as $newRole) {
-            $newRolesTransactionKeys[] = $newRole->getTranslationKey();
+            $newRolesTransactionKeys[] = $newRole->getDisplayedName();
         }
 
         $changeSet['platformRole'] = array($oldRolesTranslationKeys, $newRolesTransactionKey);
@@ -210,7 +210,7 @@ class GroupManager
             $j = 0;
 
             foreach ($roles as $role) {
-                $rolesString .= "{$this->translator->trans($role->getTranslationKey(), array(), 'platform')}";
+                $rolesString .= "{$this->translator->trans($role->getDisplayedName(), array(), 'platform')}";
 
                 if ($j < $rolesCount - 1) {
                     $rolesString .= ' ,';

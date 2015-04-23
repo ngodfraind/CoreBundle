@@ -116,7 +116,7 @@
             <div data-lang="{{ child.vars.name | upper }}"
                  class="lang{% if app.request.locale != child.vars.name %} hide{% endif %}">
                 {{
-                    form_widget(child['title'])
+                    form_widget(child['translation'])
                 }}
             </div>
         {% endfor %}

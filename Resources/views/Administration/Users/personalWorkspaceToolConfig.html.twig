@@ -37,7 +37,7 @@
                     <th>{{ 'name'|trans({}, 'platform') }}</th>
                     {% for role in roles %}
                         <th>
-                            {{ role.getTranslationKey|trans({}, 'platform') }}
+                            {{ role.getDisplayedName() }}
                         </th>
                     {% endfor %}
                 </tr>

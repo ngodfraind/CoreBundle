@@ -33,6 +33,7 @@ class PlatformConfigurationHandler
         'footer' => null,
         'logo' => 'clarolineconnect.png',
         'allow_self_registration' => true,
+        'translations_default_language' => 'fr',
         'locale_language' => 'fr',
         'theme' => 'claroline',
         'default_role' => 'ROLE_USER',

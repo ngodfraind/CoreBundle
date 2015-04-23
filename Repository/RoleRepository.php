@@ -61,13 +61,17 @@ class RoleRepository extends EntityRepository
             SELECT r FROM Claroline\CoreBundle\Entity\Role r
             JOIN r.workspace ws
             WHERE ws.id = :workspaceId
-            AND UPPER(r.translationKey) LIKE :search
+            AND UPPER(r.displayedName) LIKE :search
             ORDER BY r.{$orderedBy} {$order}
         ";
         $query = $this->_em->createQuery($dql);
         $query->setParameter('workspaceId', $workspace->getId());
         $upperSearch = strtoupper($search);
         $query->setParameter('search', "%{$upperSearch}%");
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
 
         return $query->getResult();
     }
@@ -378,7 +382,7 @@ class RoleRepository extends EntityRepository
 
     public function findRoleByWorkspaceCodeAndTranslationKey(
         $workspaceCode,
-        $translationKey,
+        $translation,
         $executeQuery = true
     )
     {
@@ -387,12 +391,16 @@ class RoleRepository extends EntityRepository
             FROM Claroline\CoreBundle\Entity\Role r
             INNER JOIN r.workspace w
             WHERE w.code = :code
-            AND r.translationKey = :key
+            AND r.displayedName = :key
         ';
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('code', $workspaceCode);
-        $query->setParameter('key', $translationKey);
+        $query->setParameter('key', $translation);
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
 
         return $executeQuery ? $query->getOneOrNullResult() : $query;
     }
@@ -408,12 +416,16 @@ class RoleRepository extends EntityRepository
             FROM Claroline\CoreBundle\Entity\Role r
             INNER JOIN r.workspace w
             WHERE w.code = :code
-            AND r.translationKey = :key
+            AND r.displayedName = :key
         ';
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('code', $workspaceCode);
         $query->setParameter('key', $translationKey);
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
 
         return $executeQuery ? $query->getResult() : $query;
     }
@@ -481,13 +493,17 @@ class RoleRepository extends EntityRepository
             FROM Claroline\CoreBundle\Entity\Role r
             WHERE r.type = :type
             AND r.name = :name
-            AND r.translationKey = :key
+            AND r.displayedName = :key
         ';
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('type', Role::USER_ROLE);
         $query->setParameter('name', $roleName);
         $query->setParameter('key', $username);
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
 
         return $executeQuery ? $query->getOneOrNullResult() : $query;
     }
@@ -498,12 +514,16 @@ class RoleRepository extends EntityRepository
             SELECT r
             FROM Claroline\CoreBundle\Entity\Role r
             WHERE r.type = :type
-            AND r.translationKey IN (:keys)
+            AND r.displayedName IN (:keys)
         ';
 
         $query = $this->_em->createQuery($dql);
         $query->setParameter('type', Role::USER_ROLE);
         $query->setParameter('keys', $keys);
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
 
         return $executeQuery ? $query->getResult() : $query;
 
@@ -549,7 +569,7 @@ class RoleRepository extends EntityRepository
             WHERE r.workspace = :workspace
             AND (
                 r.name = :roleName
-                OR UPPER(r.translationKey) = :key
+                OR UPPER(r.displayedName) = :key
             )
         ';
 
@@ -559,6 +579,10 @@ class RoleRepository extends EntityRepository
         $query->setParameter(
             'roleName',
             'ROLE_WS_' . strtoupper($translationKey) . '_' . $workspace->getGuid()
+        );
+        $query->setHint(
+            \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
         );
 
         return $executeQuery ? $query->getOneOrNullResult() : $query;

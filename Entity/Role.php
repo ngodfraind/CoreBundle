@@ -22,14 +22,17 @@ use Claroline\CoreBundle\Entity\Resource\ResourceRights;
 use Claroline\CoreBundle\Entity\Tool\ToolRights;
 use Claroline\CoreBundle\Entity\Workspace\Workspace;
 use Claroline\CoreBundle\Entity\Tool\PwsToolConfig;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Translatable\Translatable;
 
 /**
  * @ORM\Entity(repositoryClass="Claroline\CoreBundle\Repository\RoleRepository")
  * @ORM\Table(name="claro_role")
  * @ORM\HasLifecycleCallbacks
  * @DoctrineAssert\UniqueEntity("name")
+ * @Gedmo\TranslationEntity(class="Claroline\CoreBundle\Entity\Translation\RoleTranslation")
  */
-class Role implements RoleInterface
+class Role implements RoleInterface, Translatable
 {
     const PLATFORM_ROLE = 1;
     const WS_ROLE = 2;
@@ -50,10 +53,11 @@ class Role implements RoleInterface
     protected $name;
 
     /**
-     * @ORM\Column(name="translation_key")
-     * @Assert\NotBlank()
+     * @var string
+     * @Gedmo\Translatable
+     * @ORM\Column(length=255, nullable=true)
      */
-    protected $translationKey;
+    private $displayedName;
 
     /**
      * @ORM\Column(name="is_read_only", type="boolean")
@@ -172,6 +176,13 @@ class Role implements RoleInterface
      */
     protected $profileProperties;
 
+    /**
+     * @Gedmo\Locale
+     * Used locale to override Translation listener`s locale
+     * this is not a mapped field of entity metadata, just a simple property
+     */
+    private $locale;
+
     public function __construct()
     {
         $this->users             = new ArrayCollection();
@@ -217,16 +228,6 @@ class Role implements RoleInterface
     public function getName()
     {
         return $this->name;
-    }
-
-    public function setTranslationKey($key)
-    {
-        $this->translationKey = $key;
-    }
-
-    public function getTranslationKey()
-    {
-        return $this->translationKey;
     }
 
     public function isReadOnly()
@@ -365,5 +366,25 @@ class Role implements RoleInterface
     public function addProfileProperty(ProfileProperty $property)
     {
         $this->profileProperties->add($property);
+    }
+
+    public function setDisplayedName($name)
+    {
+        $this->displayedName = $name;
+    }
+
+    public function getDisplayedName()
+    {
+        return $this->displayedName;
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
+    }
+
+    public function getTranslatableLocale()
+    {
+        return $this->locale;
     }
 }

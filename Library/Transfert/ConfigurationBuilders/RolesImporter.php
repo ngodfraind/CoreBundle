@@ -165,7 +165,7 @@ class RolesImporter extends Importer implements ConfigurationInterface
             if ($role !== $this->roleManager->getManagerRole($workspace)) {
                 $data[] = array('role' => array(
                     'name' => $this->roleManager->getWorkspaceRoleBaseName($role),
-                    'translation' => $role->getTranslationKey(),
+                    'translation' => $role->getDisplayedName(),
                     'is_base_role' => false
                 ));
             }

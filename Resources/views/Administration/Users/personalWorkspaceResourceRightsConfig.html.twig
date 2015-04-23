@@ -41,7 +41,7 @@
             <tbody id="tool-table-body">
                 {% for role in roles %}
                     <tr>
-                        <th>{{ role.getTranslationKey()|trans({}, 'platform') }}</th>
+                        <th>{{ role.getDisplayedName() }}</th>
                         {% set canEdit = 0 %}
                         {% for right in rights %}
                             {% if right.getRole().getId() == role.getId() %}

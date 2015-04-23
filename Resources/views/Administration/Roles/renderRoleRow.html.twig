@@ -2,21 +2,16 @@
 
 <tr id="tr-role-{{ role.id }}">
     <td>
-        <div class="col-xs-10">
-            <input
-                class="form-control change-name-field"
-                name="name-{{ role.id }}"
-                type="text"
-                value="{{ role.translationKey|trans({}, 'platform') }}"
-            >
-            </input>
+        <div class="col-xs-10" id="role-{{ role.getId()}}-name">
+            {{ role.displayedName }}
         </div>
-        <button
+        <a
             class="btn edit-role-name-btn"
             data-role-id="{{ role.id }}"
+            href="{{ path('platform_role_edit_name_form', {'role': role.getId() })}}"
         >
             <i class="fa fa-pencil"></i>
-        </button>
+        </a>
     </td>
     <td>
         {{ count }}
@@ -66,7 +61,7 @@
             id="delete-role-{{ role.id }}-btn"
             class="btn btn-primary delete-role-btn"
             data-role-id="{{ role.id }}"
-            data-role-name="{{ role.translationKey|trans({}, 'platform') }}"
+            data-role-name="{{ role.displayedName }}"
             {% if role.isReadOnly %}
                 disabled
             {% endif %}

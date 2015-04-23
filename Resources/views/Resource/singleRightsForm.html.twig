@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h3 class='panel-title'>
             {{ role.getWorkspace().getName() }}
-            ({{ 'role'|trans({}, 'platform') }} {{ role.getTranslationKey()|trans({}, 'platform') }})
+            ({{ 'role'|trans({}, 'platform') }} {{ role.getDisplayedName() }})
         </h3>
     </div>
     <form role="form" novalidate="novalidate"

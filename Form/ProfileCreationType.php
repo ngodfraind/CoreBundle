@@ -91,7 +91,7 @@ class ProfileCreationType extends AbstractType
                     'class' => 'Claroline\CoreBundle\Entity\Role',
                     'expanded' => true,
                     'multiple' => true,
-                    'property' => 'translationKey',
+                    'property' => 'displayedName',
                     'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($isAdmin) {
                         $query = $er->createQueryBuilder('r')
                                 ->where("r.type = " . Role::PLATFORM_ROLE)

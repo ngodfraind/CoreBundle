@@ -30,7 +30,7 @@ class LogWorkspaceRegistrationDeclineEvent extends LogGenericEvent implements No
         $this->workspace = $queue->getWorkspace();
         $this->role = $queue->getRole();
 
-        $details = array('role' => array('name' => $this->role->getTranslationKey()));
+        $details = array('role' => array('name' => $this->role->getDisplayedName()));
         $details['workspace'] = array(
             'name' => $this->workspace->getName(),
             'id' => $this->workspace->getId()
