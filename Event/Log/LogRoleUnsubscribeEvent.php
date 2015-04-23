@@ -28,7 +28,7 @@ class LogRoleUnsubscribeEvent extends LogGenericEvent
         $receiver = null;
         $receiverGroup = null;
 
-        $details = array('role' => array('name' => $role->getTranslationKey()));
+        $details = array('role' => array('name' => $role->getDisplayedName()));
 
         if ($role->getWorkspace()) {
             $details['workspace'] = array('name' => $role->getWorkspace()->getName());

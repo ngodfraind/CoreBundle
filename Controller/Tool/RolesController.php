@@ -261,7 +261,12 @@ class RolesController extends Controller
         $form->handleRequest($this->request);
 
         if ($form->isValid()) {
-            $this->roleManager->edit($role);
+            $formData = $this->request->request->get('role_name_type_form');
+            $this->roleManager->renameRole(
+                $formData['displayedName'],
+                $role
+            );
+
             $route = $this->router->generate(
                 'claro_workspace_roles',
                 array('workspace' => $workspace->getId())

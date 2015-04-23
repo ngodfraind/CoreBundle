@@ -75,17 +75,17 @@
                     {{'groups'|trans({}, 'platform') }}
                 </a>
             </li>
-            
+
             {% if canEdit %}
                 <li>
                     <a href="{{ path('claro_workspace_roles', {'workspace': workspace.getId()} ) }}">
                         {{ 'roles'|trans({}, 'platform') }}
-                    </a> 
+                    </a>
                 </li>
-                <li> 
-                    <a href="{{path('claro_users_pending',{'workspace':workspace.getId()})}}"> 
-                        {{'pending'|trans({},'platform') }} 
-                    </a> 
+                <li>
+                    <a href="{{path('claro_users_pending',{'workspace':workspace.getId()})}}">
+                        {{'pending'|trans({},'platform') }}
+                    </a>
                 </li>
             {% endif %}
         </ul>
@@ -94,7 +94,7 @@
     </div>
     <div class="list-group">
         <div class="list-group-item">
-        
+
             {% if search != '' %}
                 <div class="alert alert-info">
                     {{ 'results_for_search_on'|trans({}, 'platform') }} :
@@ -112,11 +112,11 @@
                                 <i class="fa fa-plus"></i>
                                 {{ 'add_users'|trans({}, 'platform') }}
                             </a>
-                            <a href="{{ path('claro_message_form_for_workspace', {'workspace': workspace.getId()}) }}" 
-                               class="btn btn-default dropdown-toggle" 
+                            <a href="{{ path('claro_message_form_for_workspace', {'workspace': workspace.getId()}) }}"
+                               class="btn btn-default dropdown-toggle"
                                role="button"
                             >
-                                <i class="fa fa-envelope"></i> 
+                                <i class="fa fa-envelope"></i>
                                 {{ 'send_message_to_workspace'|trans({}, 'platform') }}
                             </a>
                         </div>
@@ -125,13 +125,13 @@
                 <div class="col-md-4 pull-right">
                     <div class="input-group margin-bottom-md">
                         <input class="form-control" type="text"
-                               id="search-items-txt"  
-                               placeholder="{{ 'search'|trans({}, 'platform') }}" 
+                               id="search-items-txt"
+                               placeholder="{{ 'search'|trans({}, 'platform') }}"
                                value="{{ search }}"
                         >
                         <span class="input-group-btn">
-                            <button class="filter btn btn-default" 
-                                    type="button" 
+                            <button class="filter btn btn-default"
+                                    type="button"
                                     id="search-button"
                             >
                                 <i class="fa fa-search"></i>
@@ -215,7 +215,7 @@
                     </tr>
                     </thead>
                     <tbody id="user-table-body">
-                        
+
                     {% for user in pager.currentPageResults %}
                         <tr id="row-{{ user.id }}"
                             class="row-user"
@@ -232,7 +232,7 @@
                             {% endif %}
                             <td>{{ user.getLastName() }}</td>
                             <td>{{ user.getFirstName() }}</td>
-                            
+
                             {% if canEdit and showMail %}
                                 <td>{{ user.getMail() }}</td>
                             {% endif %}
@@ -242,8 +242,8 @@
                                         <span class="label label-success"
                                               id="label-{{ role.getId() }}-{{ user.getId()}}"
                                         >
-                                            {{ role.getTranslationKey()|trans({}, 'platform') }}
-                                            
+                                            {{ role.getDisplayedName() }}
+
                                             {% if canEdit %}
                                                 <i class="fa fa-times-circle pointer-hand remove-role-button"
                                                    href="{{ path('claro_workspace_remove_role_from_user', {'workspace': workspace.getId(), 'user': user.getId(), 'role': role.getId() } ) }}"
@@ -263,7 +263,7 @@
                                                   class="label label-default"
                                                   id="label-{{ role.getId() }}-{{ user.getId()}}"
                                             >
-                                                {{ role.getTranslationKey()|trans({}, 'platform') }}
+                                                {{ role.getDisplayedName() }}
                                             </span>
                                             &nbsp;
                                         {% endif %}

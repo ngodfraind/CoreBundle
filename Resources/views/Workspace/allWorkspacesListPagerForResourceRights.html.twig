@@ -37,7 +37,7 @@
 </div>
 <br>
 <br>
-                                
+
 {% if workspaces.getNbPages() > 1 %}
      {{ renderPager(workspaces, wsSearch, wsMax, resource) }}
 {% endif %}
@@ -58,7 +58,7 @@
                 {% if 'ROLE_WS_MANAGER' in role.getName() != 1 %}
                     <a class="workspace-role-item list-group-item"
                        href="{{ path('claro_resource_right_form', {'node':resource.id, 'role':role.id}) }}">
-                        {{ role.getTranslationKey()|trans({}, 'platform') }}
+                        {{ role.getDisplayedName() }}
                     </a>
                 {% endif %}
             {% endfor %}

@@ -44,6 +44,7 @@ class FormFactory
     const TYPE_RESOURCE_PROPERTIES = 'resource_properties';
     const TYPE_WORKSPACE_ROLE = 'workspace_role';
     const TYPE_ROLE_TRANSLATION = 'workspace_role_translation';
+    const TYPE_ROLE_CREATION = 'workspace_role_creation';
     const TYPE_USER_EMAIL = 'user_email';
     const TYPE_USER_RESET_PWD = 'user_reset_pwd';
     const TYPE_SIMPLE_TEXT = 'simple_text';
@@ -197,6 +198,9 @@ class FormFactory
         ),
         self:: TYPE_AGENDA_IMPORTER => array(
             'formType' => 'Claroline\CoreBundle\Form\ImportAgendaType'
+        ),
+        self:: TYPE_ROLE_CREATION => array(
+            'formType' => 'Claroline\CoreBundle\Form\RoleCreationType'
         )
     );
 

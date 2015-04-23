@@ -42,7 +42,7 @@
                     <tbody>
                         {% for role in roles %}
                             <tr>
-                                <td> {{ role.getTranslationKey|trans({}, 'platform') }} </td>
+                                <td> {{ role.getDisplayedName() }} </td>
                                 <td>
                                     <a class="btn btn-default" href="{{ path('claro_workspace_role_edit_form', {'workspace': workspace.getId(), 'role': role.getId()}) }}" role="button">
                                         <i class="fa fa-pencil"></i> {{ 'edit'|trans({}, 'platform') }}

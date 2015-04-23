@@ -285,13 +285,13 @@ class ProfileController extends Controller
             //Detect added
             foreach ($newRoles as $role) {
                 if (!$this->isInRoles($role, $roles)) {
-                    $rolesChangeSet[$role->getTranslationKey()] = array(false, true);
+                    $rolesChangeSet[$role->getDisplayedName()] = array(false, true);
                 }
             }
             //Detect removed
             foreach ($roles as $role) {
                 if (!$this->isInRoles($role, $newRoles)) {
-                    $rolesChangeSet[$role->getTranslationKey()] = array(true, false);
+                    $rolesChangeSet[$role->getDisplayedName()] = array(true, false);
                 }
             }
             if (count($rolesChangeSet) > 0) {

@@ -136,7 +136,7 @@ class RolesController extends Controller
      */
     public function createPlatformRoleModalFormAction()
     {
-        $form = $form = $this->formFactory->create(FormFactory::TYPE_ROLE_TRANSLATION);
+        $form = $form = $this->formFactory->create(FormFactory::TYPE_ROLE_CREATION);
 
         return array('form' => $form->createView());
     }
@@ -154,7 +154,7 @@ class RolesController extends Controller
      */
     public function createPlatformRoleAction()
     {
-        $form = $this->formFactory->create(FormFactory::TYPE_ROLE_TRANSLATION);
+        $form = $this->formFactory->create(FormFactory::TYPE_ROLE_CREATION);
         $form->handleRequest($this->request);
 
         if ($form->isValid()) {
@@ -165,7 +165,7 @@ class RolesController extends Controller
                 array(
                     'id' => $role->getId(),
                     'maxUsers' => $role->getMaxUsers(),
-                    'translationKey' => $role->getTranslationKey(),
+                    'translationKey' => $role->getDisplayedName(),
                     'count' => 0
                 )
             );
@@ -209,7 +209,7 @@ class RolesController extends Controller
             array(
                 'name' => $role->getName(),
                 'limit' => $role->getMaxUsers(),
-                'translationKey' => $role->getTranslationKey()
+                'translationKey' => $role->getDisplayedName()
             )
         );
     }
@@ -233,7 +233,7 @@ class RolesController extends Controller
             array(
                 'name' => $role->getName(),
                 'limit' => $role->getMaxUsers(),
-                'translationKey' => $role->getTranslationKey()
+                'translationKey' => $role->getDisplayedName()
             )
         );
     }
@@ -256,7 +256,7 @@ class RolesController extends Controller
                 array(
                     'name' => $role->getName(),
                     'limit' => $role->getMaxUsers(),
-                    'translationKey' => $role->getTranslationKey(),
+                    'translationKey' => $role->getDisplayedName(),
                     'error' => 'negative_amount_increased'
                 ),
                 500
@@ -268,7 +268,7 @@ class RolesController extends Controller
             array(
                 'name' => $role->getName(),
                 'limit' => $role->getMaxUsers(),
-                'translationKey' => $role->getTranslationKey()
+                'translationKey' => $role->getDisplayedName()
             )
         );
     }
@@ -291,7 +291,7 @@ class RolesController extends Controller
                 array(
                     'name' => $role->getName(),
                     'limit' => $role->getMaxUsers(),
-                    'translationKey' => $role->getTranslationKey()
+                    'translationKey' => $role->getDisplayedName()
                 ),
                 500
             );
@@ -304,7 +304,7 @@ class RolesController extends Controller
             array(
                 'name' => $role->getName(),
                 'limit' => $role->getMaxUsers(),
-                'translationKey' => $role->getTranslationKey()
+                'translationKey' => $role->getDisplayedName()
             )
         );
     }
@@ -325,5 +325,63 @@ class RolesController extends Controller
         $this->roleManager->invertWorkspaceCreation($role);
 
         return new JsonResponse(array(), 200);
+    }
+
+    /**
+     * @EXT\Route(
+     *     "role/{role}/edit/name/form",
+     *     name="platform_role_edit_name_form",
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template
+     *
+     * @param Role $role
+     */
+    public function editNameModalFormAction(Role $role)
+    {
+        $form = $this->formFactory->create(
+            FormFactory::TYPE_ROLE_TRANSLATION,
+            array(),
+            $role
+        );
+
+        return array('form' => $form->createView(), 'role' => $role);
+    }
+
+    /**
+     * @EXT\Route(
+     *     "role/{role}/edit/name",
+     *     name="platform_role_edit_name",
+     *     options={"expose"=true}
+     * )
+     * @EXT\Template("ClarolineCoreBundle:Administration/Roles:editNameModalForm.html.twig")
+     *
+     * @param Role $role
+     */
+    public function editRoleNameFormAction(Role $role)
+    {
+        $form = $this->formFactory->create(
+            FormFactory::TYPE_ROLE_TRANSLATION,
+            array(),
+            $role
+        );
+        $form->handleRequest($this->request);
+
+        if ($form->isValid()) {
+            $formData = $this->request->request->get('role_name_type_form');
+            $this->roleManager->renameRole(
+                $formData['displayedName'],
+                $role
+            );
+
+            return new JsonResponse(
+                array(
+                    'role_id' => $role->getId(),
+                    'name' => $role->getDisplayedName()
+                )
+            );
+        }
+
+        return array('form' => $form->createView(), 'role' => $role);
     }
 }

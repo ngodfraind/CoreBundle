@@ -130,7 +130,7 @@
                         {% spaceless %}
                         {% for role in user.getEntityRoles() %}
                             {% if role.type == 1 %}
-                                {{ role.getTranslationKey()|trans({}, 'platform')  }}
+                                {{ role.getDisplayedName() }}
                                 {% if not loop.last %}, {% endif %}
                             {% endif %}
                         {% endfor %}

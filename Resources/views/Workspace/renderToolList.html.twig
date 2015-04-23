@@ -11,7 +11,7 @@
             {% endif %}
             {% for role in workspace.getRoles() %}
                 {% if roleHasAccess[role.getId()] is defined %}
-                    <a class="list-group-item" href="{{ path('claro_workspace_open', {'workspaceId': workspace.getId()}) }}?view_as={{ role.getName() }}">{{ role.getTranslationKey()|trans({}, 'platform') }}</a>
+                    <a class="list-group-item" href="{{ path('claro_workspace_open', {'workspaceId': workspace.getId()}) }}?view_as={{ role.getName() }}">{{ role.getDisplayedName() }}</a>
                 {% endif %}
             {% endfor %}
         </div>

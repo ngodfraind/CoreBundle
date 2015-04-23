@@ -470,7 +470,7 @@ class UserManager
             $j = 0;
 
             foreach ($roles as $role) {
-                $rolesString .= "{$this->translator->trans($role->getTranslationKey(), array(), 'platform')}";
+                $rolesString .= $role->getDisplayedName();
 
                 if ($j < $rolesCount - 1) {
                     $rolesString .= ' ,';
@@ -746,10 +746,10 @@ class UserManager
             } elseif ($role->getName() === 'ROLE_WS_CREATOR') {
                 $restrictionRoleNames = array('ROLE_ADMIN');
             }
-            $usersInRoles[$role->getTranslationKey()] = intval(
+            $usersInRoles[$role->getDisplayedName()] = intval(
                 $this->userRepo->countUsersByRole($role, $restrictionRoleNames)
             );
-            $usersInRoles['user_accounts'] += $usersInRoles[$role->getTranslationKey()];
+            $usersInRoles['user_accounts'] += $usersInRoles[$role->getDisplayedName()];
         }
 
         return $usersInRoles;

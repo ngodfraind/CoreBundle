@@ -74,19 +74,15 @@
         });
     })
     .on('click', '.edit-role-name-btn', function(event) {
-        var roleId = $(event.currentTarget).attr('data-role-id');
-        var row = $($(event.currentTarget)[0].parentNode.parentNode);
-        var newName = row.find('.change-name-field').val();
-        var url = Routing.generate('platform_role_name_edit', {'role': roleId, 'name': newName});
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            success: function(data) {
-                changeNameCallback(data, row);
-            }
-        });
+        event.preventDefault();
+        window.Claroline.Modal.displayForm(
+            $(this).attr('href'),
+            editName,
+            function() {},
+            'edit-role-name'
+        );
     })
+
     .on('click', '#create-role-btn', function(event) {
         var url = Routing.generate('claro_admin_create_platform_role_form');
 
@@ -166,12 +162,11 @@
         showAlert(Translator.trans('user_limit_success_update', {}, 'platform'), 'alert-success');
     }
 
-    var changeNameCallback = function(data, row) {
-        row.find('.change-name-field').val(trans('platform', data['translationKey']));
-        showAlert(Translator.trans('role_name_changed_success', {}, 'platform'), 'alert-success');
-    }
-
     var addRoleRow = function(data) {
         $('#role-table-body').append(Twig.render(RowFormAdminRoleList, {'role': data, 'count': 0}));
+    }
+
+    function editName(role) {
+        $('#role-' + role.role_id + '-name').html(role.name);
     }
 })();

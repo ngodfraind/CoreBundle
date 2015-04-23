@@ -80,7 +80,7 @@
                                         {% endif %}
                                     {% endfor %}
                                     <tr>
-                                        <td> {{ platformRole.getTranslationKey|trans({}, 'platform') }}</td>
+                                        <td> {{ platformRole.getDisplayedName() }}</td>
                                         <td>
                                             <input name="basedata-role-{{ platformRole.getId() }}" type="checkbox"
                                                {% if found == true and currentPreference.getBaseData() == true %}

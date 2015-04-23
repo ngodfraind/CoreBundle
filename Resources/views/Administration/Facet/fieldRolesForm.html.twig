@@ -30,7 +30,7 @@
                 <tbody>
                 {% for platformRole in platformRoles %}
                     <tr>
-                        <td> {{ platformRole.getTranslationKey|trans({}, 'platform') }}</td>
+                        <td> {{ platformRole.getDisplayedName() }}</td>
                         <td>
                             <input type="checkbox" name="open-role-{{ platformRole.getId() }}"
                                {% for fieldFacetRole in fieldFacetsRole %}

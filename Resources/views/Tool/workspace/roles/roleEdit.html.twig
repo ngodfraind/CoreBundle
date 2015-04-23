@@ -1,6 +1,6 @@
 {% extends 'ClarolineCoreBundle:Workspace:layout.html.twig' %}
 
-{% block title %}{{ parent() ~ ' - ' ~ "role_edition" | trans({}, "platform") | striptags | raw }} ({{ role.getTranslationKey() | trans({}, "platform") | striptags | raw }}){% endblock %}
+{% block title %}{{ parent() ~ ' - ' ~ "role_edition" | trans({}, "platform") | striptags | raw }} ({{ role.getDisplayedName() | striptags | raw }}){% endblock %}
 
 {% block breadcrumb %}
     {{
@@ -22,7 +22,7 @@
 
 {% block section_content %}
     <div class="panel-heading">
-        <h3 class="panel-title">{{ 'role_edition'|trans({}, 'platform') }} ({{ role.getTranslationKey() | trans({}, "platform") }})</h3>
+        <h3 class="panel-title">{{ 'role_edition'|trans({}, 'platform') }} ({{ role.getDisplayedName() }})</h3>
     </div>
     <form role="form"
           class="form-horizontal"

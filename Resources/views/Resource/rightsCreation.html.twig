@@ -12,7 +12,7 @@
                      <tr>
                         <th>{{ 'resource'|trans({},'platform') }}</th>
                         {% for config in configs %}
-                             <th>{{ config.getRole().getTranslationKey()|trans({}, 'platform') }}</th>
+                             <th>{{ config.getRole().getDisplayedName() }}</th>
                         {% endfor %}
                     </tr>
                     {% for resourceType in resourceTypes %}

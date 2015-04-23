@@ -176,14 +176,14 @@ class LogListener
             if (count($log->getDoerPlatformRoles()) > 0) {
                 $doerPlatformRolesDetails = array();
                 foreach ($log->getDoerPlatformRoles() as $platformRole) {
-                    $doerPlatformRolesDetails[] = $platformRole->getTranslationKey();
+                    $doerPlatformRolesDetails[] = $platformRole->getDisplayedName();
                 }
                 $details['doer']['platformRoles'] = $doerPlatformRolesDetails;
             }
             if (count($log->getDoerWorkspaceRoles()) > 0) {
                 $doerWorkspaceRolesDetails = array();
                 foreach ($log->getDoerWorkspaceRoles() as $workspaceRole) {
-                    $doerWorkspaceRolesDetails[] = $workspaceRole->getTranslationKey();
+                    $doerWorkspaceRolesDetails[] = $workspaceRole->getDisplayedName();
                 }
                 $details['doer']['workspaceRoles'] = $doerWorkspaceRolesDetails;
             }

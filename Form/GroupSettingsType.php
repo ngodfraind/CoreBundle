@@ -41,7 +41,7 @@ class GroupSettingsType extends GroupType
                 'mapped' => false,
                 'expanded' => true,
                 'multiple' => true,
-                'property' => 'translationKey',
+                'property' => 'displayedName',
                 'disabled' => false,
                 'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($isAdmin){
                     $query = $er->createQueryBuilder('r')

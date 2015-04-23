@@ -47,6 +47,7 @@ class GroupsController extends Controller
     private $userAdminTool;
     private $translator;
     private $authenticationManager;
+    private $sc;
 
     /**
      * @DI\InjectParams({
@@ -58,7 +59,8 @@ class GroupsController extends Controller
      *     "request"                = @DI\Inject("request"),
      *     "router"                 = @DI\Inject("router"),
      *     "translator"             = @DI\Inject("translator"),
-     *     "authenticationManager"  = @DI\Inject("claroline.common.authentication_manager")
+     *     "authenticationManager"  = @DI\Inject("claroline.common.authentication_manager"),
+     *     "sc"                     = @DI\Inject("security.context")
      * })
      */
     public function __construct(
@@ -70,7 +72,8 @@ class GroupsController extends Controller
         Request $request,
         RouterInterface $router,
         Translator $translator,
-        AuthenticationManager $authenticationManager
+        AuthenticationManager $authenticationManager,
+        $sc
     )
     {
         $this->userManager = $userManager;
@@ -82,6 +85,7 @@ class GroupsController extends Controller
         $this->router = $router;
         $this->translator = $translator;
         $this->authenticationManager = $authenticationManager;
+        $this->sc = $sc;
     }
 
     /**
@@ -381,6 +385,7 @@ class GroupsController extends Controller
      */
     public function settingsFormAction(Group $group)
     {
+        $isAdmin = $this->sc->isGranted('ROLE_ADMIN');
         $roles = $group->getPlatformRole();
         $form = $this->formFactory->create(FormFactory::TYPE_GROUP_SETTINGS, array('isAdmin' => $isAdmin, 'roles' => $roles), $group);
         $unavailableRoles = [];
@@ -417,6 +422,7 @@ class GroupsController extends Controller
      */
     public function updateSettingsAction(Group $group)
     {
+        $isAdmin = $this->sc->isGranted('ROLE_ADMIN');
         $oldRoles = $group->getPlatformRoles();
         $form = $this->formFactory->create(FormFactory::TYPE_GROUP_SETTINGS, array('isAdmin' => $isAdmin, 'roles' => $oldRoles), $group);
         $form->handleRequest($this->request);

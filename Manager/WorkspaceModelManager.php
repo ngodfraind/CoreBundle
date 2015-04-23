@@ -360,7 +360,7 @@ class WorkspaceModelManager
 
             $createdRole = $this->roleManager->createWorkspaceRole(
                 $roleName . '_' . $guid,
-                $role->getTranslationKey(),
+                $role->getDisplayedName(),
                 $workspace,
                 $role->isReadOnly()
             );
@@ -402,7 +402,7 @@ class WorkspaceModelManager
                         $right->getMask()
                     );
                 } else {
-                    $key = $role->getTranslationKey();
+                    $key = $role->getDisplayedName();
 
                     if (isset($workspaceRoles[$key]) && !empty($workspaceRoles[$key])) {
                         $this->toolRightsManager->createToolRights(
@@ -457,7 +457,7 @@ class WorkspaceModelManager
                 $newRight->setResourceNode($resource->getResourceNode());
 
                 if ($role->getWorkspace() === $source) {
-                    $key = $role->getTranslationKey();
+                    $key = $role->getDisplayedName();
 
                     if (isset($workspaceRoles[$key]) && !empty($workspaceRoles[$key])) {
                         $newRight->setRole($workspaceRoles[$key]);
@@ -697,7 +697,7 @@ class WorkspaceModelManager
 
         //now we build the array
         foreach ($wRoles as $wRole) {
-            $workspaceRoles[$wRole->getTranslationKey()] = $wRole;
+            $workspaceRoles[$wRole->getDisplayedName()] = $wRole;
         }
 
         return $workspaceRoles;
@@ -737,7 +737,7 @@ class WorkspaceModelManager
 
         foreach ($rights as $right) {
             $role = $right->getRole();
-            $key = $role->getTranslationKey();
+            $key = $role->getDisplayedName();
 
             $newRight = new ResourceRights();
             $newRight->setResourceNode($copy);

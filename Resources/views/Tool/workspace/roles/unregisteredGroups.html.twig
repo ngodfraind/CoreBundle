@@ -144,7 +144,7 @@
                                     {% for role in group.getEntityRoles() %}
                                         {% if role.getWorkspace() == workspace %}
                                             <span class="label label-success" id="label-{{ role.getId () }}-{{ group.getId()}}">
-                                                {{ role.getTranslationKey()|trans({}, 'platform') }}
+                                                {{ role.getDisplayedName() }}
                                             </span>
                                         {% endif %}
                                     {% endfor %}
@@ -177,10 +177,10 @@
                         {% for role in wsRoles %}
                             <input
                                     class="chk-role" type="checkbox" value="{{ role.getId() }}"
-                                    data-name="{{ role.getTranslationKey()|trans({}, 'platform') }}"
+                                    data-name="{{ role.getDisplayedName() }}"
                                     id="role-{{ role.getId() }}"
                                     >
-                            {{ role.getTranslationKey()|trans({}, 'platform') }}</br>
+                            {{ role.getDisplayedName() }}</br>
                         {% endfor %}
                     </form>
                 </div>

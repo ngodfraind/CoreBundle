@@ -37,7 +37,7 @@ class BaseTranslatableType extends BaseType
             $translated = array_shift($translatedContent);
         }
 
-        $builder->add('title', 'text', array('data' => $translated));
+        $builder->add('translation', 'text', array('data' => $translated));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

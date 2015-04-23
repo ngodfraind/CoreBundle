@@ -1312,12 +1312,12 @@ class ToolManager
         $repository = $this->om->getRepository('Claroline\CoreBundle\Entity\ContentTranslation');
 
         foreach ($translations as $lang => $translation) {
-            if (trim($translation['title']) !== '') {
+            if (trim($translation['translation']) !== '') {
                 $repository->translate(
                     $wot,
                     'displayedName',
                     $lang,
-                    $translation['title']
+                    $translation['translation']
                 );
             }
         }
@@ -1331,12 +1331,12 @@ class ToolManager
         $repository = $this->om->getRepository('Claroline\CoreBundle\Entity\ContentTranslation');
 
         foreach ($translations as $lang => $translation) {
-            if (trim($translation['title']) !== '') {
+            if (trim($translation['translation']) !== '') {
                 $repository->translate(
                     $tool,
                     'displayedName',
                     $lang,
-                    $translation['title']
+                    $translation['translation']
                 );
             }
         }

@@ -393,11 +393,7 @@ class WorkspaceRegistrationController extends Controller
                     'platform'
                 );
                 $msg .= ' "' .
-                    $this->translator->trans(
-                        $role->getTranslationKey(),
-                        array(),
-                        'platform'
-                    ) .
+                    $role->getDisplayedName() .
                     '"-;-';
             }
         }
@@ -445,11 +441,7 @@ class WorkspaceRegistrationController extends Controller
                     'platform'
                 );
                 $msg .= ' "' .
-                    $this->translator->trans(
-                        $role->getTranslationKey(),
-                        array(),
-                        'platform'
-                    ) .
+                    $role->getDisplayedName() .
                     '"-;-';
             }
         }

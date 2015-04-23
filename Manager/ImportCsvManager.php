@@ -632,7 +632,7 @@ class ImportCsvManager
                         $logs[] = "$roleTxt [$roleName] $nonExistentInWsTxt [$workspaceName ($workspaceCode)]";
                     } else {
                         $this->om->remove($role);
-                        $key = $role->getTranslationKey();
+                        $key = $role->getDisplayedName();
                         $logs[] = "$roleTxt [$key] $deletedTxt [$workspaceName ($workspaceCode)]";
                     }
                 }
@@ -704,7 +704,7 @@ class ImportCsvManager
                         $logs[] = "[$lineNb] $roleTxt [$roleName] $nonExistentInWsTxt [$workspaceName ($workspaceCode)]";
                     } else {
                         $this->roleManager->associateRole($user, $role);
-                        $key = $role->getTranslationKey();
+                        $key = $role->getDisplayedName();
                         $logs[] = "$userTxt [$username] $registeredTxt [$workspaceName ($workspaceCode)] $withRoleTxt [$key]";
                     }
                 }
@@ -776,7 +776,7 @@ class ImportCsvManager
                         $logs[] = "[$lineNb] $roleTxt [$roleName] $nonExistentInWsTxt [$workspaceName ($workspaceCode)]";
                     } else {
                         $this->roleManager->associateRole($user, $role);
-                        $key = $role->getTranslationKey();
+                        $key = $role->getDisplayedName();
                         $logs[] = "$userTxt [$username] $unregisteredTxt [$key] $inWorkspaceTxt [$workspaceName ($workspaceCode)]";
                     }
                 }
@@ -849,17 +849,17 @@ class ImportCsvManager
                         $logs[] = "[$lineNb] $roleTxt [$roleName] $nonExistentInWsTxt [$workspaceName ($workspaceCode)]";
                     } else {
                         $this->roleManager->associateRole($group, $role);
-                        $key = $role->getTranslationKey();
+                        $key = $role->getDisplayedName();
                         $logs[] = "$groupTxt [$groupName] $registeredTxt [$workspaceName ($workspaceCode)] $withRoleTxt [$key]";
                     }
                 }
             }
         }
         $this->om->endFlushSuite();
-        
+
         return $logs;
     }
-    
+
     public function manageWorkspaceGroupUnregistration(array $datas)
     {
         $logs = array();
@@ -922,14 +922,14 @@ class ImportCsvManager
                         $logs[] = "[$lineNb] $roleTxt [$roleName] $nonExistentInWsTxt [$workspaceName ($workspaceCode)]";
                     } else {
                         $this->roleManager->associateRole($group, $role);
-                        $key = $role->getTranslationKey();
+                        $key = $role->getDisplayedName();
                         $logs[] = "$groupTxt [$groupName] $unregisteredTxt [$key] $inWorkspaceTxt [$workspaceName ($workspaceCode)]";
                     }
                 }
             }
         }
         $this->om->endFlushSuite();
-        
+
         return $logs;
     }
 

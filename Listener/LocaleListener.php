@@ -15,6 +15,8 @@ use Gedmo\Translatable\TranslatableListener;
 use Doctrine\Common\EventArgs;
 use Gedmo\Translatable\Mapping\Event\TranslatableAdapter;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class LocaleListener extends TranslatableListener
 {
@@ -45,7 +47,8 @@ class LocaleListener extends TranslatableListener
         $refreshable = array(
             'Claroline\CoreBundle\Entity\Content',
             'Claroline\CoreBundle\Entity\Tool\OrderedTool',
-            'Claroline\CoreBundle\Entity\Tool\Tool'
+            'Claroline\CoreBundle\Entity\Tool\Tool',
+            'Claroline\CoreBundle\Entity\Role',
         );
 
         foreach ($refreshable as $class) {

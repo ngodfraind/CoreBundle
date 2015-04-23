@@ -627,7 +627,7 @@ class ModelController extends Controller
         $roles = $this->roleManager->getRolesByWorkspace($workspace);
 
         foreach ($roles as $role) {
-            $results[] = $role->getTranslationKey();
+            $results[] = $role->getDisplayedName();
         }
 
         return new JsonResponse($results);
@@ -639,4 +639,4 @@ class ModelController extends Controller
             throw new AccessDeniedException();
         }
     }
-} 
+}
