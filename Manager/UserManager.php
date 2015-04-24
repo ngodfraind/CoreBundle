@@ -102,7 +102,7 @@ class UserManager
         $this->workspaceManager       = $workspaceManager;
         $this->toolManager            = $toolManager;
         $this->strictEventDispatcher  = $strictEventDispatcher;
-        $this->personalWsTemplateFile = $personalWsTemplateFile . "default.zip";
+        $this->personalWsTemplateFile = $personalWsTemplateFile . "/default.zip";
         $this->translator             = $translator;
         $this->platformConfigHandler  = $platformConfigHandler;
         $this->pagerFactory           = $pagerFactory;

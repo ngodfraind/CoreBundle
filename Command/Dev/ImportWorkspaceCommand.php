@@ -26,8 +26,8 @@ class ImportWorkspaceCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $archive = $this->getContainer()->getParameter('claroline.param.templates_directory') . 'default.zip';
+        $archive = $this->getContainer()->getParameter('claroline.param.templates_directory') . '/default.zip';
         $config = Configuration::fromTemplate($archive);
         $this->getContainer()->get('claroline.manager.transfert_manager')->import($config);
     }
-} 
+}
