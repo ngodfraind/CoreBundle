@@ -48,7 +48,7 @@
             this.el.id = node.id;
             this.$el.addClass(this.zoomValue);
             node.displayableName = Claroline.Utilities.formatText(node.name, 20, 2);
-            isSelectionAllowed = (node.type === 'directory' && !this.parameters.isDirectorySelectionAllowed) ? false: true;
+            if (node.type === 'directory') isSelectionAllowed = true;
             var actions = this.parameters.resourceTypes.hasOwnProperty(node.type) ?
                 this.parameters.resourceTypes[node.type].actions :
                 [];
