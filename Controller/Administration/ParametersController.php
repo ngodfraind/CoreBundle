@@ -193,7 +193,9 @@ class ParametersController extends Controller
                             'max_upload_resources' => $form['maxUploadResources']->getData(),
                             'max_workspace_users' => $form['workspaceMaxUsers']->getData(),
                             'show_help_button' => $form['showHelpButton']->getData(),
-                            'help_url' => $form['helpUrl']->getData()
+                            'help_url' => $form['helpUrl']->getData(),
+                            'register_button_at_login' => $form['registerButtonAtLogin']->getData(),
+                            'send_mail_at_workspace_registration' => $form['sendMailAtWorkspaceRegistration']->getData()
                         )
                     );
 

@@ -30,6 +30,7 @@ class LocaleManager
     private $locales;
     private $userManager;
     private $tokenStorage;
+    private $configHandler;
 
     /**
      * @InjectParams({
@@ -44,6 +45,7 @@ class LocaleManager
         TokenStorageInterface $tokenStorage
     )
     {
+        $this->configHandler = $configHandler;
         $this->userManager = $userManager;
         $this->defaultLocale = $configHandler->getParameter('locale_language');
         $this->finder = new Finder();
@@ -57,7 +59,26 @@ class LocaleManager
      *
      * @return Array
      */
-    private function retriveAvailableLocales($path = '/../Resources/translations/')
+    public function retrieveAvailableLocales($path = '/../Resources/translations/')
+    {
+        $locales = array();
+        $data = $this->configHandler->getParameter('locales');
+
+        foreach ($data as $locale) {
+            $locales[$locale] = $locale;
+        }
+
+        return $locales;
+    }
+
+    /**
+     * Get a list of available languages in the platform.
+     *
+     * @param $path The path of translations files
+     *
+     * @return Array
+     */
+    public function getImplementedLocales($path = '/../Resources/translations/')
     {
         $locales = array();
         $finder = $this->finder->files()->in(__DIR__.$path)->name('/platform\.[^.]*\.yml/');
@@ -78,7 +99,7 @@ class LocaleManager
     public function getAvailableLocales()
     {
         if (!$this->locales) {
-            $this->locales = $this->retriveAvailableLocales();
+            $this->locales = $this->retrieveAvailableLocales();
         }
 
         return $this->locales;
@@ -92,10 +113,7 @@ class LocaleManager
     public function setUserLocale($locale)
     {
         $locales = $this->getAvailableLocales();
-
-        if (isset($locales[$locale]) and ($user = $this->getCurrentUser())) {
-            $this->userManager->setLocale($user, $locale);
-        }
+        $this->userManager->setLocale($this->getCurrentUser(), $locale);
     }
 
     /**

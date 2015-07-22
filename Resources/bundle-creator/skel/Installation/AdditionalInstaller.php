@@ -2,19 +2,11 @@
 
 namespace [[Vendor]]\[[Bundle]]Bundle\Installation;
 
-use Claroline\InstalationBundle\Additional\AdditinalInstaller as BaseInstaller;
+use Claroline\InstallationBundle\Additional\AdditionalInstaller as BaseInstaller;
 
-class AdditionalInsaller extends BaseInstaller
+class AdditionalInstaller extends BaseInstaller
 {
-    private $logger;
-
-    public function __construct()
-    {
-        $self = $this;
-        $this->logger = function ($message) use ($self) {
-            $self->log($message);
-        }
-    }
+    protected $logger;
 
     public function preUpdate($currentVersion, $targetVersion)
     {

@@ -92,6 +92,15 @@ class GeneralType extends AbstractType
                 )
             )
             ->add(
+                'registerButtonAtLogin',
+                'checkbox',
+                array(
+                    'required' => false,
+                    'disabled' => isset($this->lockedParams['register_button_at_login']),
+                    'label' => 'show_register_button_in_login_page'
+                )
+            )
+            ->add(
                 'defaultRole',
                 'entity',
                 array(
@@ -218,6 +227,15 @@ class GeneralType extends AbstractType
                     'label' => 'help_url',
                     'required' => false,
                     'disabled' => isset($this->lockedParams['help_url'])
+                )
+            )
+            ->add(
+                'sendMailAtWorkspaceRegistration',
+                'checkbox',
+                array(
+                    'required' => false,
+                    'disabled' => isset($this->lockedParams['send_mail_at_workspace_registration']),
+                    'label' => 'send_mail_at_workspace_registration'
                 )
             );
 
